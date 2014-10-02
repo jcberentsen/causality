@@ -14,3 +14,8 @@ data Fact = Fact Ident
 isFact :: Fact -> Bool
 isFact = const True
 
+data Implication = Implication Fact Fact
+
+eval :: Implication -> Fact
+eval (Implication _premise conclusion) = conclusion
+

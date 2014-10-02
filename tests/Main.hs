@@ -9,10 +9,13 @@ import Test.Tasty.TH
 
 import Model
 
-fact = testCase "A fact is true" $ False @?= (isFact $ Fact "universal truth")
+myTestGroup = $(testGroupGenerator)
 
---test_implication = Implication (Fact "I think") (Fact "I am") -- cogito ergo sum
---premise_implies_conclusion = testCase "premise implies conclusion" $ True @?= isFact $ eval test_implication
+case_fact = do True @?= (isFact $ Fact "universal truth")
+
+an_implication = Implication (Fact "I think") (Fact "I am") -- cogito ergo sum
+case_premise_implies_conclusion = do True @?= (isFact $ eval an_implication)
 
 main :: IO ()
-main = defaultMain $(testGroupGenerator)
+main = defaultMain myTestGroup
+
