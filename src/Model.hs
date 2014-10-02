@@ -1,4 +1,4 @@
-{-# LANGUAGE EmptyDataDecls #-}
+{-# LANGUAGE EmptyDataDecls, GADTs #-}
 
 module Model where
 -- <http://crpit.com/confpapers/CRPITV16Allison.pdf>
@@ -40,6 +40,14 @@ void (Evidence name (P p)) = Evidence name (P (p-p))
 -- ------------------
 data Causality name = Causality name name deriving (Show)
 
-eval :: (Eq name, Eq a, Num a) => Causality name -> Evidence name a -> Evidence name a
-eval (Causality cause effect) (Evidence evidence val) = if evidence == cause then (Evidence effect val) else (no_evidence_for effect)
+data Model name prob term where
+    Name { val :: name } :: Model name prob name
+    Cause { cause :: name, effect :: name } :: Model name prob (Causality name)
+
+eval_cause :: (Eq name, Eq a, Num a) => Causality name -> Evidence name a -> Evidence name a
+eval_cause (Causality cause effect) (Evidence evidence val)
+    = if evidence == cause then (Evidence effect val) else (no_evidence_for effect)
+
+eval_model :: (Num prob, Eq prob, Eq name) => Model name prob a -> Evidence name prob -> Evidence name prob
+eval_model Cause { cause = c, effect = e } evidence = eval_cause (Causality c e) evidence
 
