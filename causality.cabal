@@ -38,4 +38,7 @@ test-suite causality-tests
       , tasty-quickcheck
       , tasty-smallcheck
       , tasty-th
+      , QuickCheck
+      , derive
       , causality
+      , bytestring
