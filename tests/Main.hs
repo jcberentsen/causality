@@ -19,15 +19,23 @@ derive makeArbitrary ''Causality
 
 myTestGroup = $(testGroupGenerator)
 
-evidence_for_falling :: Evidence String Int
-evidence_for_falling = Evidence "falling" yes
+gravity = Causality "gravity" "falling"
+
+case_gravity_causes_falling = do evidence_for_falling @?= eval gravity gravity_is_a_fact
 
 gravity_is_a_fact :: Evidence String Int
 gravity_is_a_fact = Evidence "gravity" yes
 
-gravity_causes_falling = Causality "gravity" "falling"
-case_gravity = do evidence_for_falling @?= eval gravity_causes_falling gravity_is_a_fact
-    where _types = yes :: Probability Integer
+evidence_for_falling :: Evidence String Int
+evidence_for_falling = Evidence "falling" yes
+
+case_no_gravity_causes_no_falling = do eval gravity universe_with_no_gravity @?= no_evidence_for_falling
+
+universe_with_no_gravity :: Evidence String Int
+universe_with_no_gravity = Evidence "gravity" no
+
+no_evidence_for_falling :: Evidence String Int
+no_evidence_for_falling = Evidence "falling" no
 
 prop_evidence_for_cause_causally_yields_effect (causality@(Causality cause effect)) = effect_caused  == (eval causality (Evidence cause yes))
     where _types = (causality :: Causality Bool, yes :: Probability Integer)
