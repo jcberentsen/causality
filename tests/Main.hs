@@ -13,25 +13,25 @@ import Data.DeriveTH
 
 import Model
 
---import Data.Derive.Arbitrary
---import Test.QuickCheck.Arbitrary
-
 derive makeArbitrary ''Probability
-derive makeArbitrary ''Sure
 derive makeArbitrary ''Evidence
-derive makeArbitrary ''Fact
-derive makeArbitrary ''Implication
+derive makeArbitrary ''Causality
 
 myTestGroup = $(testGroupGenerator)
 
-cogito_ergo_sum = Implication (fact "I think") (fact "I am")
-case_cogito_ergo_sum = do True @?= (isFact $ eval cogito_ergo_sum)
+evidence_for_falling :: Evidence String Int
+evidence_for_falling = Evidence "falling" yes
 
-prop_fact f = isFact f
-    where _type = f :: Fact Bool
+gravity_is_a_fact :: Evidence String Int
+gravity_is_a_fact = Evidence "gravity" yes
 
-prop_implication imp = isFact $ eval imp
-    where _types = imp :: Implication Bool
+gravity_causes_falling = Causality "gravity" "falling"
+case_gravity = do evidence_for_falling @?= eval gravity_causes_falling gravity_is_a_fact
+    where _types = yes :: Probability Integer
+
+prop_implication causality@(Causality cause effect) = effect_caused  == (eval causality (Evidence cause yes))
+    where _types = (causality :: Causality Bool, yes :: Probability Integer)
+          effect_caused = (Evidence effect yes) :: Evidence Bool Integer
 
 main :: IO ()
 main = defaultMain myTestGroup
