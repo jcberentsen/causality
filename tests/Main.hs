@@ -45,7 +45,7 @@ prop_evidence_for_cause_causally_yields_effect (causality@(Causality cause effec
 
 -- rain or sprinklers cause wetness
 wetness_model :: Model String Int (Causality String)
-wetness_model = Cause "rain" "wet"
+wetness_model = Cause $ Causality "rain" "wet"
 -- Probability distribution
 -- rain   sprinklers      wet
 -- --------------------------
