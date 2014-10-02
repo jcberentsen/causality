@@ -29,7 +29,7 @@ gravity_causes_falling = Causality "gravity" "falling"
 case_gravity = do evidence_for_falling @?= eval gravity_causes_falling gravity_is_a_fact
     where _types = yes :: Probability Integer
 
-prop_implication causality@(Causality cause effect) = effect_caused  == (eval causality (Evidence cause yes))
+prop_evidence_for_cause_causally_yields_effect (causality@(Causality cause effect)) = effect_caused  == (eval causality (Evidence cause yes))
     where _types = (causality :: Causality Bool, yes :: Probability Integer)
           effect_caused = (Evidence effect yes) :: Evidence Bool Integer
 
