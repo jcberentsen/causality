@@ -37,9 +37,11 @@ universe_with_no_gravity = Evidence "gravity" no
 no_evidence_for_falling :: Evidence String Int
 no_evidence_for_falling = Evidence "falling" no
 
-prop_evidence_for_cause_causally_yields_effect (causality@(Causality cause effect)) = effect_caused  == (eval causality (Evidence cause yes))
-    where _types = (causality :: Causality Bool, yes :: Probability Integer)
-          effect_caused = (Evidence effect yes) :: Evidence Bool Integer
+prop_evidence_for_cause_causally_yields_effect (causality@(Causality cause effect))
+    = effect_caused  == (eval causality (Evidence cause yes))
+        where
+            _types = (causality :: Causality Bool, yes :: Probability Integer)
+            effect_caused = (Evidence effect yes) :: Evidence Bool Integer
 
 main :: IO ()
 main = defaultMain myTestGroup
