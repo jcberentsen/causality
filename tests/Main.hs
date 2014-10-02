@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell  #-}
+{-# LANGUAGE OverloadedStrings, TemplateHaskell  #-}
 {-# OPTIONS_GHC -fno-warn-missing-signatures  #-}
 
 import Test.Tasty
@@ -7,22 +7,12 @@ import Test.Tasty
 import Test.Tasty.HUnit
 import Test.Tasty.TH
 
-isFact :: Bool
-isFact = True
+import Model
 
-myTestGroup :: TestTree
-myTestGroup = $(testGroupGenerator)
+fact = testCase "A fact is true" $ False @?= (isFact $ Fact "universal truth")
 
-premise_implies_conclusion = testCase "premise implies conclusion" $ True @?= isFact
+--test_implication = Implication (Fact "I think") (Fact "I am") -- cogito ergo sum
+--premise_implies_conclusion = testCase "premise implies conclusion" $ True @?= isFact $ eval test_implication
 
 main :: IO ()
-main = defaultMain tests
-
-tests :: TestTree
-tests = testGroup "Tests" [unitTests]
-
-unitTests :: TestTree
-unitTests = testGroup "Unit tests"
-    [ testCase "sanity" $ True @?= True
-    , myTestGroup
-    ]
+main = defaultMain $(testGroupGenerator)
