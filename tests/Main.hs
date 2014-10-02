@@ -59,7 +59,7 @@ case_rain_causing_wet = do eval_model wetness_model raining @?= wet
 -- TODO case_sprinklers_causing_wet = do eval_model wetness_model sprinklers @?= wet
 
 raining = fact "rain" :: Evidence String Int
-sprinklers = fact "sprinklers" :: Evidence String Int
+--sprinklers = fact "sprinklers" :: Evidence String Int
 wet = fact "wet" :: Evidence String Int
 
 main :: IO ()
