@@ -68,16 +68,6 @@ wet_proposition = "porch is wet"
 wet = fact wet_proposition :: Evidence String Bool
 not_wet = void wet
 
-rain_causes_wetness :: Model String Bool (Causality String)
-rain_causes_wetness = Cause $ raining |> wet
---rain_causes_wetness = Cause $ Causality rain_proposition wet_proposition
-
-sprinklers_cause_wetness :: Model String Bool (Causality String)
-sprinklers_cause_wetness = Cause $ Causality sprinklers_proposition wet_proposition
-
-case_rain_causing_wet = do eval_model rain_causes_wetness [raining] @?= [wet]
-case_sprinklers_causing_wet = do eval_model sprinklers_cause_wetness [sprinklers] @?= [wet]
-
 -- multiple causality and evidencing
 
 -- CausalModel

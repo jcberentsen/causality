@@ -74,9 +74,6 @@ intersectWithObservations claims observations =
 contradicting :: (Eq a, Eq b) => Evidence a b -> Evidence a b -> Bool
 contradicting (Evidence a pa) (Evidence b pb) = if a == b then if pa /= pb then True else False else False
 
-data Model name prob term where
-    Cause :: { _cause :: Causality name} -> Model name prob (Causality name)
-
 -- or
 (<|>) :: Evidence name prob -> Evidence name prob -> Evidence name prob
 ev1 <|> _ = ev1
@@ -90,9 +87,6 @@ ev1 <|> _ = ev1
 eval_cause :: (Eq name, Eq a, Truthy a) => Causality name -> Evidence name a -> Evidence name a
 eval_cause (Causality cause effect) (Evidence evidence val)
     = if evidence == cause then (Evidence effect val) else (no_evidence_for effect)
-
-eval_model :: (Truthy prob, Eq prob, Eq name) => Model name prob a -> [Evidence name prob] -> [Evidence name prob]
-eval_model Cause { _cause = c } evidence = map (eval_cause c) evidence
 
 fact :: Truthy a => name -> Evidence name a
 fact name = Evidence name yes
