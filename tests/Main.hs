@@ -113,6 +113,10 @@ case_no_rain_nor_sprinklers_cause_not_wet =
     do eval_causalmodel rain_or_sprinklers_cause_wetness observations @?= observations ++ [not_wet]
         where observations = [not_raining, no_sprinklers]
 
+operator_based_model = raining <|> sprinklers |> wet
+case_operators_model =
+    do operator_based_model @?= AnyCause [raining, sprinklers] wet
+
 main :: IO ()
 main = defaultMain myTestGroup
 
