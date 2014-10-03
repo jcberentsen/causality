@@ -43,10 +43,8 @@ prop_evidence_for_cause_causally_yields_effect (causality@(Causality cause effec
             _types = (causality :: Causality Bool, yes :: Probability Integer)
             effect_caused = (Evidence effect yes) :: Evidence Bool Integer
 
--- rain or sprinklers cause wetness
-wetness_model :: Model String Int (Causality String)
-wetness_model = Cause $ Causality "rain" "wet"
--- Probability distribution
+-- Rain or sprinklers cause wetness
+-- Causal distribution
 -- rain   sprinklers      wet
 -- --------------------------
 -- no     no              no
@@ -55,12 +53,29 @@ wetness_model = Cause $ Causality "rain" "wet"
 -- yes    yes             yes
 -- --------------------------
 
-case_rain_causing_wet = do eval_model wetness_model raining @?= wet
--- TODO case_sprinklers_causing_wet = do eval_model wetness_model sprinklers @?= wet
+-- "porch is wet" claim, proposition?
+-- "porch is wet" fact, evidence
+-- "is porch wet" query, how is that different from claim, really?
+rain_proposition = "it has rained"
+raining = fact rain_proposition :: Evidence String Int
 
-raining = fact "rain" :: Evidence String Int
---sprinklers = fact "sprinklers" :: Evidence String Int
-wet = fact "wet" :: Evidence String Int
+sprinklers_proposition = "it has rained"
+sprinklers = fact sprinklers_proposition :: Evidence String Int
+
+wet_proposition = "porch is wet"
+wet = fact wet_proposition :: Evidence String Int
+
+rain_causes_wetness :: Model String Int (Causality String)
+rain_causes_wetness = Cause $ Causality rain_proposition wet_proposition
+
+sprinklers_cause_wetness :: Model String Int (Causality String)
+sprinklers_cause_wetness = Cause $ Causality sprinklers_proposition wet_proposition
+
+wetness_model :: Model String Int (Causality String)
+wetness_model = rain_causes_wetness
+
+case_rain_causing_wet = do eval_model wetness_model raining @?= wet
+case_sprinklers_causing_wet = do eval_model sprinklers_cause_wetness sprinklers @?= wet
 
 main :: IO ()
 main = defaultMain myTestGroup
@@ -68,3 +83,5 @@ main = defaultMain myTestGroup
 -- Notes:
 -- Example of an effect with two causes?
 -- rain or sprinklers cause wet
+--
+-- -- do(nothing) is the counterfactual. Replace an evidence with nothing to see the difference
