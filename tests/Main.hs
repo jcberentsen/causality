@@ -23,25 +23,25 @@ gravity = Causality "gravity" "falling"
 
 case_gravity_causes_falling = do evidence_for_falling @?= eval_cause gravity gravity_is_a_fact
 
-gravity_is_a_fact :: Evidence String Int
+gravity_is_a_fact :: Evidence String Bool
 gravity_is_a_fact = fact "gravity"
 
-evidence_for_falling :: Evidence String Int
+evidence_for_falling :: Evidence String Bool
 evidence_for_falling = fact "falling"
 
 case_no_gravity_causes_no_falling = do eval_cause gravity universe_with_no_gravity @?= no_evidence_for_falling
 
-universe_with_no_gravity :: Evidence String Int
+universe_with_no_gravity :: Evidence String Bool
 universe_with_no_gravity = Evidence "gravity" no
 
-no_evidence_for_falling :: Evidence String Int
+no_evidence_for_falling :: Evidence String Bool
 no_evidence_for_falling = Evidence "falling" no
 
 prop_evidence_for_cause_causally_yields_effect (causality@(Causality cause effect))
     = effect_caused  == (eval_cause causality (Evidence cause yes))
         where
-            _types = (causality :: Causality Bool, yes :: Probability Integer)
-            effect_caused = (Evidence effect yes) :: Evidence Bool Integer
+            _types = (causality :: Causality String, yes :: Probability Bool)
+            effect_caused = (Evidence effect yes) :: Evidence String Bool
 
 -- Rain or sprinklers cause wetness
 -- Causal distribution
@@ -57,25 +57,71 @@ prop_evidence_for_cause_causally_yields_effect (causality@(Causality cause effec
 -- "porch is wet" fact, evidence
 -- "is porch wet" query, how is that different from claim, really?
 rain_proposition = "it has rained"
-raining = fact rain_proposition :: Evidence String Int
+raining = fact rain_proposition :: Evidence String Bool
+not_raining = void raining
 
-sprinklers_proposition = "it has rained"
-sprinklers = fact sprinklers_proposition :: Evidence String Int
+sprinklers_proposition = "sprinklers"
+sprinklers = fact sprinklers_proposition :: Evidence String Bool
+no_sprinklers = void sprinklers
 
 wet_proposition = "porch is wet"
-wet = fact wet_proposition :: Evidence String Int
+wet = fact wet_proposition :: Evidence String Bool
+not_wet = void wet
 
-rain_causes_wetness :: Model String Int (Causality String)
-rain_causes_wetness = Cause $ Causality rain_proposition wet_proposition
+rain_causes_wetness :: Model String Bool (Causality String)
+rain_causes_wetness = Cause $ raining |> wet
+--rain_causes_wetness = Cause $ Causality rain_proposition wet_proposition
 
-sprinklers_cause_wetness :: Model String Int (Causality String)
+sprinklers_cause_wetness :: Model String Bool (Causality String)
 sprinklers_cause_wetness = Cause $ Causality sprinklers_proposition wet_proposition
 
-wetness_model :: Model String Int (Causality String)
-wetness_model = rain_causes_wetness
+either_rain_or_sprinklers_causes_wetness :: Model String Bool (Causality String)
+either_rain_or_sprinklers_causes_wetness = Cause $ fact rain_proposition <|> fact sprinklers_proposition |> wet
 
-case_rain_causing_wet = do eval_model wetness_model raining @?= wet
-case_sprinklers_causing_wet = do eval_model sprinklers_cause_wetness sprinklers @?= wet
+case_rain_causing_wet = do eval_model rain_causes_wetness [raining] @?= [wet]
+case_sprinklers_causing_wet = do eval_model sprinklers_cause_wetness [sprinklers] @?= [wet]
+
+-- multiple causality and evidencing
+
+-- CausalModel
+prop_ignorance_always_yield_no_evidence evidence =
+    eval_causalmodel (Ignorance ()) evidence == []
+        where _types = evidence :: [Evidence () Bool]
+
+prop_evidenly_model_always_yields_evidence evidence =
+    eval_causalmodel (Evidently [raining]) evidence == [raining]
+        where _types = evidence :: [Evidence String Bool]
+
+prop_fact_causes_effect any_fact =
+    isFact any_fact ==> eval_causalmodel (Causally any_fact raining) [any_fact] == [raining]
+        where _types = any_fact :: Evidence String Bool
+
+prop_any_fact_also_in_anycause_yields_effect any_fact =
+    isFact any_fact ==> eval_causalmodel (AnyCause [any_fact] raining) [any_fact] == [raining]
+        where _types = any_fact :: Evidence String Bool
+
+prop_no_facts_to_an_AnyCause_yields_no_effects cause =
+    isFact cause ==> eval_causalmodel (AnyCause [cause] raining) [] == []
+        where _types = cause :: Evidence String Bool
+
+rain_or_sprinklers_cause_wetness = AnyCause [raining, sprinklers] wet
+
+evidence_of_rain_and_sprinklers = [raining, sprinklers]
+case_rain_or_sprinklers_causes_wetness =
+    do eval_causalmodel rain_or_sprinklers_cause_wetness evidence_of_rain_and_sprinklers @?= [wet]
+
+case_no_rain_nor_sprinklers_cause_no_wetness =
+    do eval_causalmodel rain_or_sprinklers_cause_wetness [] @?= []
+
+case_wrong_evidence_does_not_cause_rain =
+    do eval_causalmodel rain_or_sprinklers_cause_wetness [fact "wrong evidence"] @?= []
+
+prop_evidence_contradicts_counter_evidence evidence =
+    contradicting evidence (dual evidence)
+        where _types = evidence :: Evidence Bool Bool
+
+case_no_rain_nor_sprinklers_cause_not_wet =
+    do eval_causalmodel rain_or_sprinklers_cause_wetness [not_raining, no_sprinklers]  @?= [not_wet]
 
 main :: IO ()
 main = defaultMain myTestGroup
