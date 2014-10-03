@@ -51,15 +51,15 @@ data CausalModel name prob term where
 eval_causalmodel :: (Truthy prob, Eq prob, Eq name) =>
     CausalModel name prob term -> [Evidence name prob] -> [Evidence name prob]
 
-eval_causalmodel (Ignorance _)  _observations = []
-eval_causalmodel Evidently { _evidence = e } _observations = e -- no need to consider observations
+eval_causalmodel (Ignorance _)  observations = observations
+eval_causalmodel Evidently { _evidence = e } observations = observations ++ e -- no need to consider observations
 eval_causalmodel Causally { _causer=(Evidence c _), _effect=(Evidence e _) } observations =
-    map (eval_cause causality) observations
+    observations ++ map (eval_cause causality) observations
         where
             causality = Causality c e
 
 eval_causalmodel AnyCause { _causes=cs, _effect=e } observations =
-    case intersectWithObservations cs observations of
+    observations ++ case intersectWithObservations cs observations of
         [] -> []
         observed_causes -> if anyEvidenceFor observed_causes then [e] else [dual e]
 
