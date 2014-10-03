@@ -38,33 +38,33 @@ data Evidence name a = Evidence name (Probability a) deriving (Show, Eq)
 -- ------------------
 data Causality name = Causality name name deriving (Show)
 
-data CausalModel name prob term where
-    Ignorance :: () -> CausalModel name prob ()
-    Evidently :: { _evidence :: [Evidence name prob] } -> CausalModel name prob ()
+data CausalModel name prob where
+    Ignorance :: CausalModel name prob
+    Evidently :: { _evidence :: [Evidence name prob] } -> CausalModel name prob
     Causally :: { _causer :: Evidence name prob
                 , _effect :: Evidence name prob
-                } -> CausalModel name prob ()
+                } -> CausalModel name prob
     AnyCause :: { _causes :: [Evidence name prob]
                 , _effect :: Evidence name prob
-                } -> CausalModel name prob ()
+                } -> CausalModel name prob
 
-instance (Show name, Show prob, Show term) => Show (CausalModel name prob term) where
-    show (Ignorance _) = "Ignorance"
+instance (Show name, Show prob) => Show (CausalModel name prob) where
+    show Ignorance = "Ignorance"
     show (Evidently e) = "Evidently " ++ show e
     show (Causally c e) = "Causally " ++ show c ++ " -> " ++ show e
     show (AnyCause c e) = "AnyCause " ++ show c ++ " -> " ++ show e
 
-instance (Eq prob, Eq name, Eq term) => Eq (CausalModel name prob term) where
-    (==) (Ignorance _) (Ignorance _) = True
+instance (Eq prob, Eq name) => Eq (CausalModel name prob) where
+    (==) Ignorance Ignorance = True
     (==) (Evidently e1) (Evidently e2) = e1 == e2
     (==) (Causally c1 e1) (Causally c2 e2) = c1 == c2 && e1 == e2
     (==) (AnyCause c1 e1) (AnyCause c2 e2) = c1 == c2 && e1 == e2
     (==) _ _  = False
 
 eval_causalmodel :: (Truthy prob, Eq prob, Eq name) =>
-    CausalModel name prob term -> [Evidence name prob] -> [Evidence name prob]
+    CausalModel name prob -> [Evidence name prob] -> [Evidence name prob]
 
-eval_causalmodel (Ignorance _)  observations = observations
+eval_causalmodel Ignorance observations = observations
 eval_causalmodel Evidently { _evidence = e } observations = observations ++ e
 eval_causalmodel Causally { _causer=(Evidence c _), _effect=(Evidence e _) } observations =
     observations ++ map (eval_cause causality) observations
@@ -93,8 +93,8 @@ e1 <|> e2 = [e1, e2]
 
 --any cause implies effect
 --note this is different from all causes are necessary to cause effect
-(∴) :: [Evidence name prob] -> Evidence name prob -> CausalModel name prob ()
-(|>) :: [Evidence name prob] -> Evidence name prob -> CausalModel name prob ()
+(∴) :: [Evidence name prob] -> Evidence name prob -> CausalModel name prob
+(|>) :: [Evidence name prob] -> Evidence name prob -> CausalModel name prob
 causes ∴ effect = AnyCause causes effect
 (|>) = (∴)
 

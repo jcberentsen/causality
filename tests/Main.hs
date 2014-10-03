@@ -72,7 +72,7 @@ not_wet = void wet
 
 -- CausalModel
 prop_ignorance_always_yield_original_evidence evidence =
-    eval_causalmodel (Ignorance ()) evidence == evidence
+    eval_causalmodel Ignorance evidence == evidence
         where _types = evidence :: [Evidence () Bool]
 
 prop_evidently_model_always_yields_evidence evidence =
