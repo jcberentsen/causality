@@ -79,7 +79,7 @@ data Model name prob term where
 
 -- or
 (<|>) :: Evidence name prob -> Evidence name prob -> Evidence name prob
-ev1 <|> ev2 = ev1
+ev1 <|> _ = ev1
 
 --implies
 (∴) :: Evidence name prob -> Evidence name prob -> Causality name

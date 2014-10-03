@@ -75,9 +75,6 @@ rain_causes_wetness = Cause $ raining |> wet
 sprinklers_cause_wetness :: Model String Bool (Causality String)
 sprinklers_cause_wetness = Cause $ Causality sprinklers_proposition wet_proposition
 
-either_rain_or_sprinklers_causes_wetness :: Model String Bool (Causality String)
-either_rain_or_sprinklers_causes_wetness = Cause $ fact rain_proposition <|> fact sprinklers_proposition |> wet
-
 case_rain_causing_wet = do eval_model rain_causes_wetness [raining] @?= [wet]
 case_sprinklers_causing_wet = do eval_model sprinklers_cause_wetness [sprinklers] @?= [wet]
 
