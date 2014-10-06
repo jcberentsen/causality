@@ -50,8 +50,9 @@ prop_unlikely_evidence =
         low_prob = P 0.01 :: Probability Float
 
 -- Perfectly distributed random numbers between 0 and 1. In a particular random order (sorted!) :D
+-- Ex. many_tosses 2 -> [0.0, 1.0]; many_tosses 3 yields [0.0, 0.5, 1.0]
 many_tosses :: Fractional a => Int -> [a]
-many_tosses how_many = take how_many $ map (\n -> (fromIntegral n) / (fromIntegral how_many)) $ [0::Int ..] 
+many_tosses how_many = take how_many $ map (\n -> (fromIntegral n) / (fromIntegral how_many - 1)) $ [0..how_many]
 
 -- Populations. A causal system is a generator of populations. The input is generators of facts.
 -- The output is population of facts.
