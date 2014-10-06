@@ -18,4 +18,4 @@ all_tests =
 main :: IO ()
 main = defaultMain all_tests
 
--- -- do(nothing) is the counterfactual. Replace an evidence with nothing to see the difference
+-- -- do(nothing) is the counterfactual (What if we don't?) Replace evidence with nothing to see the difference
