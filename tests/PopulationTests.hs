@@ -36,7 +36,7 @@ prop_sampling_cause_with_false_evidence_yields_counterfacts seed
           cause = fact "cause" :: Evidence String Bool
           effect = fact "effect" :: Evidence String Bool
 
-prop_likelyhood_generates_evidence_given_loaded_dice toss =
+prop_likelyhood_generates_evidence toss =
     (Population.select (Likelyhood "heads" p) toss) == (Evidence "heads" (P (toss > 0.5)))
     where
         p = P 0.5 :: Probability Float
