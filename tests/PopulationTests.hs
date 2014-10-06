@@ -11,6 +11,7 @@ import Test.Tasty.QuickCheck as QC
 import Evidence
 import Model
 import Population
+import Likelyhood
 
 population_test_group = $(testGroupGenerator)
 
@@ -35,5 +36,14 @@ prop_sampling_cause_with_false_evidence_yields_counterfacts seed
           cause = fact "cause" :: Evidence String Bool
           effect = fact "effect" :: Evidence String Bool
 
+prop_likelyhood_generates_evidence_given_loaded_dice toss =
+    (Population.select (Likelyhood "heads" p) toss) == (Evidence "heads" (P (toss > 0.5)))
+    where
+        p = P 0.5 :: Probability Float
+
 -- Populations. A causal system is a generator of populations. The input is generators of facts.
 -- The output is population of facts.
+--
+-- Figure out what evidence is input
+-- Define Likelyhood of Evidence: Ex: [likelyhood "rain" 0.5, likelyhood "sprinklers" 0.1]
+-- sampling an Evidence Distribution yields concrete evidence -> [E "rain" yes, E "sprinklers" no]
