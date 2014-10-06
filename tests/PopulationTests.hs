@@ -42,7 +42,7 @@ prop_likelyhood_generates_evidence toss =
         p = P 0.5 :: Probability Float
 
 prop_unlikely_evidence =
-    (length (filter isFact synthethic_evidence)) < 100
+    (length (filter isFact synthethic_evidence)) < 10
     where
         synthethic_evidence = map likelyhood tosses
         likelyhood = Population.select (Likelyhood "unlikely" low_prob) :: Float -> Evidence String Bool
