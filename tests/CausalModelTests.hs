@@ -10,6 +10,7 @@ import Test.Tasty.QuickCheck as QC
 import Test.Tasty.HUnit
 
 import Model
+import Evidence
 
 causal_model_test_group = $(testGroupGenerator)
 
