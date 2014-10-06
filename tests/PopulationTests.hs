@@ -49,6 +49,17 @@ prop_unlikely_evidence =
         likelyhood = Population.select (Likelyhood "unlikely" low_prob) :: Float -> Evidence String Bool
         low_prob = P 0.01 :: Probability Float
 
+prop_rain_sprinkler_likelyhood_yields_major_wetness_population =
+    False
+    where
+        synthetic_evidence = synthesize_evidence 10 rain_sprinklers_priors :: [Evidence String Bool]
+
+rain_sprinklers_priors = [Likelyhood "rain" (P 0.5), Likelyhood "sprinklers" (P 0.1)] :: [Likelyhood String Float]
+
+synthesize_evidence :: (Truthy c, Ord b, Eq c, Eq a, Fractional b) => Int -> [Likelyhood a b] -> [Evidence a c]
+synthesize_evidence how_many priors =
+    concat $ map (\prior -> map (\toss -> Population.select prior toss) (many_tosses how_many)) priors
+
 -- Perfectly distributed random numbers between 0 and 1. In a particular random order (sorted!) :D
 -- Ex. many_tosses 2 -> [0.0, 1.0]; many_tosses 3 yields [0.0, 0.5, 1.0]
 many_tosses :: Fractional a => Int -> [a]
