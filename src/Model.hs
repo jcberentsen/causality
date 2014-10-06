@@ -5,12 +5,12 @@ module Model where
 
 import Data.List
 
-data Probability a = P a deriving (Show, Eq)
+data Probability p = P p deriving (Show, Eq)
 
-class Truthy a where
-    truthy :: a -> Bool
-    yes :: a
-    no :: a
+class Truthy p where
+    truthy :: p -> Bool
+    yes :: p
+    no :: p
 
 instance Truthy Double where
     truthy v = if v < 0.96 then False else True
@@ -22,12 +22,12 @@ instance Truthy Bool where
     yes = True
     no = False
 
-instance Truthy a => Truthy (Probability a) where
+instance Truthy p => Truthy (Probability p) where
     truthy (P p) = truthy p
     yes = P yes
     no = P no
 
-data Evidence name a = Evidence name (Probability a) deriving (Show, Eq)
+data Evidence name p = Evidence name (Probability p) deriving (Show, Eq)
 
 -- Causality: cause effect
 -- Probability distribution for cause

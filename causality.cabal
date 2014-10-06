@@ -15,7 +15,10 @@ cabal-version:       >=1.10
 library
   ghc-options:         -Wall -Werror
   hs-source-dirs:      src
-  exposed-modules:     Model
+  exposed-modules:
+      Model
+    , Population
+
   -- other-modules:       
   -- other-extensions:    
   build-depends:
