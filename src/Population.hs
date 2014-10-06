@@ -13,7 +13,7 @@ sample seed model =
     where
         synthetic_evidence =
             case model of
-                Causally cause e -> [if seed == yes then cause else void cause]
+                Causally cause _ -> [if seed == yes then cause else void cause]
                 _ -> []
 
 select :: (Ord like, Eq name, Eq like, Eq r, Truthy r) => Likelyhood name like -> like -> Evidence name r
