@@ -17,4 +17,4 @@ sample seed model = case model of
     _ -> []
 
 select :: (Ord like, Eq name, Eq like, Eq r, Truthy r) => Likelyhood name like -> like -> Evidence name r
-select (Likelyhood name (P like)) reality = Evidence name (P (if reality <= like then no else yes))
+select (Likelyhood name (P like)) reality = Evidence name (P (if reality <= like then yes else no))

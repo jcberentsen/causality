@@ -37,9 +37,17 @@ prop_sampling_cause_with_false_evidence_yields_counterfacts seed
           effect = fact "effect" :: Evidence String Bool
 
 prop_likelyhood_generates_evidence toss =
-    (Population.select (Likelyhood "heads" p) toss) == (Evidence "heads" (P (toss > 0.5)))
+    (Population.select (Likelyhood "heads" p) toss) == (Evidence "heads" (P (toss < 0.5)))
     where
         p = P 0.5 :: Probability Float
+
+prop_unlikely_evidence =
+    (length (filter isFact synthethic_evidence)) < 100
+    where
+        synthethic_evidence = map likelyhood tosses
+        likelyhood = Population.select (Likelyhood "unlikely" low_prob) :: Float -> Evidence String Bool
+        tosses = replicate 100 0.5 :: [Float] -- bad tosses, though
+        low_prob = P 0.01 :: Probability Float
 
 -- Populations. A causal system is a generator of populations. The input is generators of facts.
 -- The output is population of facts.
