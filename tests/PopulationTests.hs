@@ -46,8 +46,9 @@ prop_unlikely_evidence =
     where
         synthethic_evidence = map likelyhood tosses
         likelyhood = Population.select (Likelyhood "unlikely" low_prob) :: Float -> Evidence String Bool
-        tosses = replicate 100 0.5 :: [Float] -- bad tosses, though
+        tosses = take how_many $ iterate (+ 1.0 / (fromIntegral how_many)) 0.0 :: [Float] -- Really crappy random, evenly distributed though?
         low_prob = P 0.01 :: Probability Float
+        how_many = 100
 
 -- Populations. A causal system is a generator of populations. The input is generators of facts.
 -- The output is population of facts.
