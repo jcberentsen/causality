@@ -8,14 +8,14 @@ import Test.Tasty
 
 import PopulationTests
 import CausalModelTests
-import PhenotypeTests
+import MonohybridCrossTests
 import DihybridCrossTests
 
 all_tests =
     testGroup "All"
         [ causal_model_test_group
         , population_test_group
-        , monohybride_test_group
+        , monohybrid_test_group
         , dihybrid_test_group
         ]
 

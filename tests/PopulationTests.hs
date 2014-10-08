@@ -7,7 +7,7 @@ import TestHarness ()
 
 import Test.Tasty.TH
 import Test.Tasty.QuickCheck as QC
---import Test.Tasty.HUnit
+import Test.Tasty.HUnit
 
 import Evidence
 import Model
@@ -50,6 +50,13 @@ prop_unlikely_evidence =
         likelyhood = Population.select (Likelyhood "unlikely" low_prob) :: Float -> Evidence String Bool
         low_prob = P 0.01 :: Probability Float
 
+case_combine = do
+    combine [] @?= ([] :: [[Bool]])
+    combine [["single"]] @?= [["single"]]
+    combine [[True], []] @?= []
+    combine [[], [True]] @?= []
+    combine [[True], [False]] @?= [[True,False]]
+
 -- TODO synthetic evidence should come in tuples
 {-
 -- case_rain_sprinkler_likelyhood_yields_major_wetness_population =
@@ -68,11 +75,6 @@ synthesize_evidence :: (Truthy c, Ord b, Eq c, Eq a, Fractional b) => Int -> [Li
 synthesize_evidence how_many priors =
     concat $ map (\prior -> map (\toss -> Population.select prior toss) (many_tosses how_many)) priors
 -}
-
--- Perfectly distributed random numbers between 0 and 1. In a particular nonrandom order (sorted!) :D
--- Ex. many_tosses 2 -> [0.0, 1.0]; many_tosses 3 yields [0.0, 0.5, 1.0]
-many_tosses :: Fractional a => Int -> [a]
-many_tosses how_many = take how_many $ map (\n -> (fromIntegral n) / (fromIntegral how_many - 1)) $ [0..how_many]
 
 -- Populations. A causal system is a generator of populations. The input is generators of facts.
 -- The output is population of facts.
