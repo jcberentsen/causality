@@ -66,11 +66,11 @@ not_wet = void wet
 -- multiple causality and evidencing
 
 -- CausalModel
-prop_ignorance_always_yield_original_evidence evidence =
+prop_ignorance_only_yield_original_evidence evidence =
     eval_causalmodel Ignorance evidence == evidence
         where _types = evidence :: [Evidence () Bool]
 
-prop_evidently_model_always_yields_evidence evidence =
+prop_evidently_model_yields_evidence evidence =
     eval_causalmodel (Evidently [raining]) evidence == evidence ++ [raining]
         where _types = evidence :: [Evidence String Bool]
 
@@ -78,11 +78,11 @@ prop_fact_causes_effect any_fact =
     isFact any_fact ==> eval_causalmodel (Causally any_fact raining) [any_fact] == any_fact : [raining]
         where _types = any_fact :: Evidence String Bool
 
-prop_any_fact_also_in_anycause_yields_effect any_fact =
+prop_AnyCause_yields_effect_given_any_of_the_causal_facts any_fact =
     isFact any_fact ==> eval_causalmodel (AnyCause [any_fact] raining) [any_fact] == any_fact : [raining]
         where _types = any_fact :: Evidence String Bool
 
-prop_no_facts_to_an_AnyCause_yields_no_effects cause =
+prop_AnyCause_causes_nothing_given_no_facts cause =
     isFact cause ==> eval_causalmodel (AnyCause [cause] raining) [] == []
         where _types = cause :: Evidence String Bool
 
@@ -113,6 +113,6 @@ prop_operator_model (cause1, cause2, effect) =
         where _types = [cause1, cause2, effect] :: [Evidence String Bool]
 
 -- AllCause
-prop_all_facts_in_all_cause_yields_effect facts =
+prop_AllCause_causes_effect_given_all_facts facts =
         elem raining $ eval_causalmodel (AllCause facts raining) facts
         where _types = facts :: [Evidence String Bool]
