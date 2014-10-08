@@ -112,3 +112,7 @@ prop_operator_model (cause1, cause2, effect) =
     cause1 <|> cause2 |> effect ==  AnyCause [cause1, cause2] effect
         where _types = [cause1, cause2, effect] :: [Evidence String Bool]
 
+-- AllCause
+prop_all_facts_in_all_cause_yields_effect facts =
+        elem raining $ eval_causalmodel (AllCause facts raining) facts
+        where _types = facts :: [Evidence String Bool]

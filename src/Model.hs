@@ -23,18 +23,23 @@ data CausalModel name prob where
     AnyCause :: { _causes :: [Evidence name prob]
                 , _effect :: Evidence name prob
                 } -> CausalModel name prob
+    AllCause :: { _causes :: [Evidence name prob]
+                , _effect :: Evidence name prob
+                } -> CausalModel name prob
 
 instance (Show name, Show prob) => Show (CausalModel name prob) where
     show Ignorance = "Ignorance"
     show (Evidently e) = "Evidently " ++ show e
     show (Causally c e) = "Causally " ++ show c ++ " -> " ++ show e
     show (AnyCause c e) = "AnyCause " ++ show c ++ " -> " ++ show e
+    show (AllCause c e) = "AllCause " ++ show c ++ " -> " ++ show e
 
 instance (Eq prob, Eq name) => Eq (CausalModel name prob) where
     (==) Ignorance Ignorance = True
     (==) (Evidently e1) (Evidently e2) = e1 == e2
     (==) (Causally c1 e1) (Causally c2 e2) = c1 == c2 && e1 == e2
     (==) (AnyCause c1 e1) (AnyCause c2 e2) = c1 == c2 && e1 == e2
+    (==) (AllCause c1 e1) (AllCause c2 e2) = c1 == c2 && e1 == e2
     (==) _ _  = False
 
 eval_causalmodel :: (Truthy prob, Eq prob, Eq name) =>
@@ -51,6 +56,9 @@ eval_causalmodel AnyCause { _causes=cs, _effect=e } observations =
     observations ++ case intersectWithObservations cs observations of
         [] -> []
         observed_causes -> if anyEvidenceFor observed_causes then [e] else [dual e]
+
+eval_causalmodel AllCause { _causes=cs, _effect=e } observations =
+    observations ++ if observations == cs then [e] else [dual e] -- TODO handle ordering, this should be a Set operation not List
 
 --any cause implies effect
 --note this is different from all causes are necessary to cause effect

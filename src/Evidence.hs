@@ -31,6 +31,9 @@ data Evidence name p = Evidence name (Probability p) deriving (Show, Eq)
 anyEvidenceFor :: Truthy b => [Evidence a b] -> Bool
 anyEvidenceFor = any (\(Evidence _ p) -> truthy p)
 
+allEvidenceFor :: Truthy b => [Evidence a b] -> Bool
+allEvidenceFor = all (\(Evidence _ p) -> truthy p)
+
 intersectWithObservations :: Eq a => [Evidence a b] -> [Evidence a b] -> [Evidence a b]
 intersectWithObservations claims observations =
     intersectBy (\(Evidence a _) (Evidence b _) -> a==b) observations claims -- observations are kept
@@ -45,6 +48,12 @@ e1 <|> e2 = [e1, e2]
 
 fact :: Truthy a => name -> Evidence name a
 fact name = Evidence name yes
+
+truly :: name -> Evidence name Bool
+truly name = fact name
+
+untruly :: name -> Evidence name Bool
+untruly name = void $ fact name
 
 counterfact :: Truthy a => name -> Evidence name a
 counterfact name = Evidence name no

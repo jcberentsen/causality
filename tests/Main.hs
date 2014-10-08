@@ -8,11 +8,13 @@ import Test.Tasty
 
 import PopulationTests
 import CausalModelTests
+import PhenotypeTests
 
 all_tests =
     testGroup "All"
         [ causal_model_test_group
         , population_test_group
+        , phenotype_test_group
         ]
 
 main :: IO ()
