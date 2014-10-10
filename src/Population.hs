@@ -21,12 +21,12 @@ select (Likelyhood name (P like)) reality = Evidence name (P (if reality <= like
 
 generate_population ::
     (Truthy p, Eq p, Eq name, Ord like, Fractional like) =>
-    [Likelyhood name like] -> CausalModel name p -> [[Evidence name p]]
+    Int -> [Likelyhood name like] -> CausalModel name p -> [[Evidence name p]]
 
-generate_population potentials model =
+generate_population tosses potentials model =
     map (eval_causalmodel model) scenarios
     where
-        synthetic_evidence = synthesize_evidence 2 potentials
+        synthetic_evidence = synthesize_evidence tosses potentials
         scenarios = combine synthetic_evidence
 
 synthesize_evidence :: (Truthy c, Ord b, Eq c, Eq a, Fractional b) => Int -> [Likelyhood a b] -> [[Evidence a c]]

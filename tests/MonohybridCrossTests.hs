@@ -69,7 +69,7 @@ case_when_random_occurences_of_allele_B_and_b_half_population_is_brown = do
     count (untruly "brown") (concat crossings) @?= 2
     count (truly "brown") (concat crossings) @?= 2
     where
-        crossings = generate_population priors cause_brown
+        crossings = generate_population 2 priors cause_brown
         priors = [chaotic "B", chaotic "b"] :: [Likelyhood String Double]
         -- Idea: forget :: Evidence name a -> Likelyhood name b
         -- or some other name for replacing evidence with likelyhood
