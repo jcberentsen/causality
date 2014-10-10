@@ -17,8 +17,8 @@ data Causality name = Causality name name deriving (Show)
 data CausalModel name prob where
     Ignorance :: CausalModel name prob
     Evidently :: { _evidence :: [Evidence name prob] } -> CausalModel name prob
-    Causally :: { _causer :: Evidence name prob
-                , _effect :: Evidence name prob
+    Causally :: { _causer :: Evidence name prob -- Note: perhaps Conditional is better semantic name for causer
+                , _effect :: Evidence name prob -- Consider Conditional as separate type from Evidence?
                 } -> CausalModel name prob
     AnyCause :: { _causes :: [Evidence name prob]
                 , _effect :: Evidence name prob

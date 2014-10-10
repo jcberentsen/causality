@@ -57,24 +57,25 @@ case_combine = do
     combine [[], [True]] @?= []
     combine [[True], [False]] @?= [[True,False]]
 
--- TODO synthetic evidence should come in tuples
-{-
--- case_rain_sprinkler_likelyhood_yields_major_wetness_population =
--- use likelyhood to generate synthetic evidence (observation)
--- run each observation through model to generate conclusions (effect)
--- collect all conclusions of type "wet" and count them
--- calculate ratio of "wet" against "not wet" it should correspond to causal model
-
-    synthetic_evidence @?= [truly "rain", untruly "rain"]
+case_rain_sprinkler_likelyhood_yields_major_wetness_population =
+    do
+         count (truly "wet") (concat conclusions) @?= 3
+         count (untruly "wet") (concat conclusions) @?= 1
     where
-        synthetic_evidence = synthesize_evidence 10 rain_sprinklers_priors :: [Evidence String Bool]
+        model = AnyCause [truly "rain", truly "sprinklers"] $ truly "wet"
+        conclusions = generate_population rain_sprinklers_priors model
+
+case_rain_sprinkler_likely_synthetic_population =
+    synthetic_evidence @?=
+        [ [truly "rain", truly "sprinklers"]
+        , [truly "rain", untruly "sprinklers"]
+        , [untruly "rain", truly "sprinklers"]
+        , [untruly "rain", untruly "sprinklers"]
+        ]
+    where
+        synthetic_evidence = combine $ synthesize_evidence 2 rain_sprinklers_priors :: [[Evidence String Bool]]
 
 rain_sprinklers_priors = [Likelyhood "rain" (P 0.5), Likelyhood "sprinklers" (P 0.1)] :: [Likelyhood String Float]
-
-synthesize_evidence :: (Truthy c, Ord b, Eq c, Eq a, Fractional b) => Int -> [Likelyhood a b] -> [Evidence a c]
-synthesize_evidence how_many priors =
-    concat $ map (\prior -> map (\toss -> Population.select prior toss) (many_tosses how_many)) priors
--}
 
 -- Populations. A causal system is a generator of populations. The input is generators of facts.
 -- The output is population of facts.

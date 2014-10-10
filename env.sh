@@ -1,1 +1,1 @@
-export PATH=$PWD/.cabal-sandbox/bin/:$PATH
+export PATH=$PWD/../shared-sandbox/bin/:$PATH
