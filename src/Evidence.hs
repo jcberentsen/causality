@@ -1,10 +1,29 @@
-{-# LANGUAGE EmptyDataDecls, GADTs #-}
+{-# LANGUAGE
+      EmptyDataDecls
+    , GADTs
+    , DeriveDataTypeable
+    , DeriveGeneric
+    , EmptyDataDecls
+    , FlexibleContexts
+    , FlexibleInstances
+    , ScopedTypeVariables
+    , StandaloneDeriving
+    , TemplateHaskell
+    , TupleSections
+    , TypeFamilies
+    , UndecidableInstances
+    #-}
 
 module Evidence where
 
 import Data.List
+import Data.Typeable
+import GHC.Generics
+import Data.Aeson.TH
 
-data Probability p = P p deriving (Show, Eq)
+data Probability p = P p
+    deriving (Generic, Show, Typeable, Eq)
+$(deriveJSON defaultOptions ''Probability)
 
 class Truthy p where
     truthy :: p -> Bool
@@ -26,7 +45,10 @@ instance Truthy p => Truthy (Probability p) where
     yes = P yes
     no = P no
 
-data Evidence name p = Evidence name (Probability p) deriving (Show, Eq)
+data Evidence name p = Evidence name (Probability p)
+    deriving (Generic, Show, Typeable, Eq)
+
+$(deriveJSON defaultOptions ''Evidence)
 
 anyEvidenceFor :: Truthy b => [Evidence a b] -> Bool
 anyEvidenceFor = any (\(Evidence _ p) -> truthy p)

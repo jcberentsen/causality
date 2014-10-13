@@ -1,9 +1,27 @@
-{-# LANGUAGE EmptyDataDecls, GADTs #-}
+{-# LANGUAGE
+      EmptyDataDecls
+    , GADTs
+    , DeriveDataTypeable
+    , DeriveGeneric
+    , EmptyDataDecls
+    , FlexibleContexts
+    , FlexibleInstances
+    , ScopedTypeVariables
+    , StandaloneDeriving
+    , TemplateHaskell
+    , TupleSections
+    , TypeFamilies
+    , UndecidableInstances
+    #-}
 
 module Model where
 -- <http://crpit.com/confpapers/CRPITV16Allison.pdf>
 
 import Evidence
+
+import Data.Typeable
+import GHC.Generics
+import Data.Aeson.TH
 
 -- Causality: cause effect
 -- Probability distribution for cause
@@ -12,7 +30,11 @@ import Evidence
 -- no      |   no
 -- yes     |   yes
 -- ------------------
-data Causality name = Causality name name deriving (Show)
+data Causality name =
+    Causality name name
+    deriving (Generic, Show, Typeable)
+
+$(deriveJSON defaultOptions ''Causality)
 
 data CausalModel name prob where
     Ignorance :: CausalModel name prob
@@ -26,6 +48,8 @@ data CausalModel name prob where
     AllCause :: { _causes :: [Evidence name prob]
                 , _effect :: Evidence name prob
                 } -> CausalModel name prob
+
+$(deriveToJSON defaultOptions ''CausalModel)
 
 instance (Show name, Show prob) => Show (CausalModel name prob) where
     show Ignorance = "Ignorance"
