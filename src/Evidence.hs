@@ -1,17 +1,8 @@
 {-# LANGUAGE
-      EmptyDataDecls
-    , GADTs
+      GADTs
     , DeriveDataTypeable
     , DeriveGeneric
-    , EmptyDataDecls
-    , FlexibleContexts
-    , FlexibleInstances
-    , ScopedTypeVariables
-    , StandaloneDeriving
     , TemplateHaskell
-    , TupleSections
-    , TypeFamilies
-    , UndecidableInstances
     #-}
 
 module Evidence where
@@ -50,19 +41,7 @@ instance Truthy p => Truthy (Probability p) where
 
 data Evidence name p = Evidence name (Probability p)
     deriving (Generic, Show, Typeable, Eq, Ord)
-
 $(deriveJSON defaultOptions ''Evidence)
-
-type Observations name p = Set (Evidence name p)
-
-conclude :: (Ord p, Ord name) => [Evidence name p] -> Observations name p
-conclude ev = Set.fromList ev
-
-join_observations :: (Ord name, Ord p) => [Observations name p] -> Observations name p
-join_observations obs = Set.unions obs
-
-observations_toList :: Observations name p -> [Evidence name p]
-observations_toList obs = Set.toList obs
 
 anyEvidenceFor :: Truthy b => [Evidence a b] -> Bool
 anyEvidenceFor = any (\(Evidence _ p) -> truthy p)

@@ -11,6 +11,7 @@ import Test.Tasty.HUnit
 
 import Model
 import Evidence
+import Observations
 
 chained_model_test_group = $(testGroupGenerator)
 
@@ -22,10 +23,14 @@ rain_causes_wet = Causally raining wet
 wet_causes_slippery = Causally wet slippery
 rain_causes_wet_causes_slippery = Multiple [rain_causes_wet, wet_causes_slippery]
 
-case_given_wet_causing_spillery_we_cant_conclude_slippery_from_rain = eval_causalmodel [raining] wet_causes_slippery @?= (conclude $ [raining])
+case_given_wet_causing_spillery_we_cant_conclude_slippery_from_rain =
+    eval_causalmodel [raining] wet_causes_slippery @?= (conclude $ [raining])
 
-case_rain_causes_wet_causes_slippery_manually_iterated = eval_causalmodel (observations_toList (eval_causalmodel [raining] model)) model  @?= (conclude $ [raining, wet, slippery])
-    where model = rain_causes_wet_causes_slippery
+case_rain_causes_wet_causes_slippery_manually_iterated =
+    eval_causalmodel (observations_toList (eval_causalmodel [raining] model)) model
+    @?= (conclude $ [raining, wet, slippery])
+        where model = rain_causes_wet_causes_slippery
 
-case_rain_causes_wet_causes_slippery = eval_causalmodel [raining] model @?= (conclude $ [raining, wet, slippery])
-    where model = rain_causes_wet_causes_slippery
+case_rain_causes_wet_causes_slippery =
+    eval_causalmodel [raining] model @?= (conclude $ [raining, wet, slippery])
+        where model = rain_causes_wet_causes_slippery

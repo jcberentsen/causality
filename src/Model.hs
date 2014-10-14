@@ -1,37 +1,19 @@
 {-# LANGUAGE
-      EmptyDataDecls
-    , GADTs
-    , DeriveDataTypeable
-    , DeriveGeneric
-    , EmptyDataDecls
-    , FlexibleContexts
-    , FlexibleInstances
-    , ScopedTypeVariables
-    , StandaloneDeriving
+      GADTs
     , TemplateHaskell
-    , TupleSections
-    , TypeFamilies
-    , UndecidableInstances
     #-}
 
 module Model where
 -- <http://crpit.com/confpapers/CRPITV16Allison.pdf>
 
 import Evidence
+import Observations
 
 import Data.Typeable
 import GHC.Generics
 import Data.Aeson.TH
 
 import qualified Data.Set as Set
-
--- Causality: cause effect
--- Probability distribution for cause
--- cause   |   effect
--- ------------------
--- no      |   no
--- yes     |   yes
--- ------------------
 
 data CausalModel name prob where
     Ignorance :: CausalModel name prob
@@ -96,7 +78,7 @@ eval_causalmodel observations model@(Multiple { _causalities=cs }) =
 causes ∴ effect = AnyCause causes effect
 (|>) = (∴)
 
--- evaluating a cause yields the effect only if the evidence is
+-- evaluating a cause yields the effect only if there is evidence present (missing or irrelevant evidence yields nothing)
 eval_cause :: (Eq name, Eq a, Truthy a, Ord name, Ord a) => name -> name -> Evidence name a -> Observations name a
 eval_cause cause effect (Evidence evidence val)
     = if evidence == cause then conclude [Evidence effect val] else Set.empty

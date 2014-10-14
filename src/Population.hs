@@ -5,6 +5,7 @@ module Population where
 
 import Model
 import Evidence
+import Observations
 import Likelyhood
 
 type Population name p = [Observations name p]
@@ -19,7 +20,8 @@ sample seed model =
                 _ -> []
 
 select :: (Ord like, Eq name, Eq like, Eq r, Truthy r) => Likelyhood name like -> like -> Evidence name r
-select (Likelyhood name (P like)) reality = Evidence name (P (if reality <= like then yes else no))
+select (Likelyhood name (P like)) reality =
+    Evidence name (P (if reality <= like then yes else no))
 
 generate_population ::
     (Truthy p, Eq p, Eq name, Ord like, Fractional like, Ord name, Ord p) =>
@@ -45,10 +47,13 @@ combine _ = []
 -- Perfectly distributed random numbers between 0 and 1. In a particular nonrandom order (sorted!) :D
 -- Ex. many_tosses 2 -> [0.0, 1.0]; many_tosses 3 yields [0.0, 0.5, 1.0]
 many_tosses :: Fractional a => Int -> [a]
-many_tosses how_many = take how_many $ map (\n -> (fromIntegral n) / (fromIntegral how_many - 1)) $ [0..how_many]
+many_tosses how_many =
+    take how_many $ map (\n -> (fromIntegral n) / (fromIntegral how_many - 1)) $ [0..how_many]
 
 count :: Eq a => a -> [a] -> Int
-count a as = length $ filter (==a) as
+count a as =
+    length $ filter (==a) as
 
 population_count :: (Eq name, Eq p, Ord name, Ord p) => Evidence name p -> Population name p -> Int
-population_count e pop = count e $ concat (map observations_toList pop)
+population_count e pop =
+    count e $ concat (map observations_toList pop)

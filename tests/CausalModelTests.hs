@@ -11,6 +11,7 @@ import Test.Tasty.HUnit
 
 import Model
 import Evidence
+import Observations
 
 import qualified Data.Set as Set
 

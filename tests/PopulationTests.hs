@@ -10,6 +10,7 @@ import Test.Tasty.QuickCheck as QC
 import Test.Tasty.HUnit
 
 import Evidence
+import Observations
 import Model
 import Population
 import Likelyhood
