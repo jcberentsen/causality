@@ -80,7 +80,7 @@ case_irrelevant_evidence_does_not_cause_rain =
     where irrelevant_evidence = [fact "irrelevant"]
 
 prop_evidence_contradicts_counter_evidence evidence =
-    isEvidenced evidence ==> contradicting evidence (dual evidence)
+    contradicting evidence (dual evidence)
         where _types = evidence :: Evidence Bool Bool
 
 case_no_rain_nor_sprinklers_cause_not_wet =

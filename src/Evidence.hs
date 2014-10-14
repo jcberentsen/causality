@@ -76,9 +76,6 @@ counterfact name = Evidence name no
 isFact :: Truthy a => Evidence name a -> Bool
 isFact (Evidence _ (P v)) = truthy v
 
-isEvidenced :: Evidence name a -> Bool
-isEvidenced (Evidence _ _) = True
-
 void :: Truthy a => Evidence name a -> Evidence name a
 void (Evidence name _) = Evidence name no
 
