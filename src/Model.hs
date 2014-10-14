@@ -9,8 +9,6 @@ module Model where
 import Evidence
 import Observations
 
-import Data.Typeable
-import GHC.Generics
 import Data.Aeson.TH
 
 import qualified Data.Set as Set

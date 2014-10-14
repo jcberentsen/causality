@@ -8,7 +8,6 @@ import Test.Tasty.HUnit ()
 import Data.DeriveTH
 
 import Evidence
-import Model
 
 -- derive arbitrary for code under test
 derive makeArbitrary ''Probability

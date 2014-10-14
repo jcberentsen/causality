@@ -12,9 +12,6 @@ import Data.Typeable
 import GHC.Generics
 import Data.Aeson.TH
 
-import Data.Set (Set)
-import qualified Data.Set as Set
-
 data Probability p = P p
     deriving (Generic, Show, Typeable, Eq, Ord)
 $(deriveJSON defaultOptions ''Probability)

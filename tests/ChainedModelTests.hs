@@ -6,7 +6,7 @@ module ChainedModelTests where
 import TestHarness ()
 
 import Test.Tasty.TH
-import Test.Tasty.QuickCheck as QC
+--import Test.Tasty.QuickCheck as QC
 import Test.Tasty.HUnit
 
 import Model
