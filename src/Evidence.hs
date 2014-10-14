@@ -48,7 +48,7 @@ instance Truthy p => Truthy (Probability p) where
     yes = P yes
     no = P no
 
-data Evidence name p = Evidence name (Probability p) | NoEvidence name -- Note: consider using Maybe Evidence where appropriate?
+data Evidence name p = Evidence name (Probability p)
     deriving (Generic, Show, Typeable, Eq, Ord)
 
 $(deriveJSON defaultOptions ''Evidence)
@@ -77,9 +77,6 @@ intersectWithObservations claims observations =
 
 contradicting :: (Eq a, Eq b) => Evidence a b -> Evidence a b -> Bool
 contradicting (Evidence a pa) (Evidence b pb) = if a == b then if pa /= pb then True else False else False
-contradicting (Evidence a pa) (NoEvidence b) = False
-contradicting (NoEvidence a) (Evidence b pb) = False
-contradicting (NoEvidence a) (NoEvidence b) = False
 
 -- or
 (<|>) :: Evidence name prob -> Evidence name prob -> [Evidence name prob]
@@ -99,16 +96,12 @@ counterfact name = Evidence name no
 
 isFact :: Truthy a => Evidence name a -> Bool
 isFact (Evidence _ (P v)) = truthy v
-isFact (NoEvidence _ ) = False
 
 isEvidenced :: Evidence name a -> Bool
 isEvidenced (Evidence _ _) = True
-isEvidenced _ = False
 
 void :: Truthy a => Evidence name a -> Evidence name a
 void (Evidence name _) = Evidence name no
-void (NoEvidence name) = Evidence name no
 
 dual :: Truthy a => Evidence name a -> Evidence name a
 dual (Evidence name p) = Evidence name (if truthy p then no else yes)
-dual (NoEvidence name) = NoEvidence name

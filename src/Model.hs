@@ -23,6 +23,8 @@ import Data.Typeable
 import GHC.Generics
 import Data.Aeson.TH
 
+import qualified Data.Set as Set
+
 -- Causality: cause effect
 -- Probability distribution for cause
 -- cause   |   effect
@@ -71,7 +73,7 @@ eval_causalmodel :: (Truthy prob, Eq prob, Eq name, Ord prob, Ord name) =>
 eval_causalmodel observations Ignorance = conclude observations
 eval_causalmodel observations (Evidently { _evidence = e }) = conclude $ observations ++ e
 eval_causalmodel observations (Causally { _causer=(Evidence c _), _effect=(Evidence e _) }) =
-    conclude $ observations ++ map (eval_cause c e) observations
+    join_observations $ [(conclude $ observations)] ++ map (eval_cause c e) observations
 
 eval_causalmodel observations (AnyCause { _causes=cs, _effect=e }) =
     conclude $ observations ++ case intersectWithObservations cs observations of
@@ -84,9 +86,8 @@ eval_causalmodel observations (AllCause { _causes=cs, _effect=e }) =
 eval_causalmodel observations model@(Multiple { _causalities=cs }) =
     let conclusions = join_observations (map (eval_causalmodel observations) cs)
     in
-        conclusions
-        --if conclusions == observations then conclusions
-        --else eval_causalmodel conclusions model
+        if conclusions == (conclude observations) then conclusions
+        else eval_causalmodel (observations_toList conclusions) model
 
 --any cause implies effect
 --note this is different from all causes are necessary to cause effect
@@ -96,9 +97,7 @@ causes ∴ effect = AnyCause causes effect
 (|>) = (∴)
 
 -- evaluating a cause yields the effect only if the evidence is
-eval_cause :: (Eq name, Eq a, Truthy a) => name -> name -> Evidence name a -> Evidence name a
+eval_cause :: (Eq name, Eq a, Truthy a, Ord name, Ord a) => name -> name -> Evidence name a -> Observations name a
 eval_cause cause effect (Evidence evidence val)
-    = if evidence == cause then (Evidence effect val) else (NoEvidence effect)
-eval_cause cause effect (NoEvidence evidence)
-    = NoEvidence effect
+    = if evidence == cause then conclude [Evidence effect val] else Set.empty
 
