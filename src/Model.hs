@@ -69,6 +69,14 @@ eval_causalmodel observations model@(Multiple { _causalities=cs }) =
         if conclusions == (conclude observations) then conclusions
         else eval_causalmodel (observations_toList conclusions) model
 
+
+join_models :: (Truthy prob, Eq prob, Eq name, Ord prob, Ord name) =>
+    CausalModel name prob -> CausalModel name prob -> CausalModel name prob
+
+join_models (Evidently es) model = Evidently $ observations_toList (eval_causalmodel es model)
+join_models model (Evidently es) = Evidently $ observations_toList (eval_causalmodel es model)
+join_models _ _ = Ignorance
+
 --any cause implies effect
 --note this is different from all causes are necessary to cause effect
 (∴) :: [Evidence name prob] -> Evidence name prob -> CausalModel name prob
