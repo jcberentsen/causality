@@ -14,6 +14,8 @@ import Model
 import Population
 import Likelyhood
 
+import qualified Data.Set as Set
+
 monohybrid_test_group = $(testGroupGenerator)
 
 -- Alleles B (brown), b (blue)
@@ -48,10 +50,10 @@ brown = truly "brown"
 cause_brown = AnyCause [allele_B] brown
 
 prop_required_cause_for_brown_phenotype =
-    elem brown $ eval_causalmodel cause_brown [allele_B]
+    Set.member brown $ eval_causalmodel [allele_B] cause_brown
 
 prop_only_b_allele_not_enough_to_conclude_brown_phenotype =
-    not (elem brown $ eval_causalmodel cause_brown [allele_b])
+    not (Set.member brown $ eval_causalmodel [allele_b] cause_brown)
 
 case_synthetic_evidence = do
     combinations @?=
@@ -66,8 +68,8 @@ case_synthetic_evidence = do
 
 case_when_random_occurences_of_allele_B_and_b_half_population_is_brown = do
     -- allele_B explains it
-    count (untruly "brown") (concat crossings) @?= 2
-    count (truly "brown") (concat crossings) @?= 2
+    population_count (untruly "brown") crossings @?= 2
+    population_count (truly "brown") crossings @?= 2
     where
         crossings = generate_population 2 priors cause_brown
         priors = [chaotic "B", chaotic "b"] :: [Likelyhood String Double]

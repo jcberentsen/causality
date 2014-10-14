@@ -7,9 +7,11 @@ import Model
 import Evidence
 import Likelyhood
 
-sample :: (Eq name, Eq p, Truthy p) => p -> CausalModel name p -> [Evidence name p]
+type Population name p = [Observations name p]
+
+sample :: (Eq name, Eq p, Truthy p, Ord name, Ord p) => p -> CausalModel name p -> Observations name p
 sample seed model =
-    eval_causalmodel model synthetic_evidence
+    eval_causalmodel synthetic_evidence model
     where
         synthetic_evidence =
             case model of
@@ -20,11 +22,11 @@ select :: (Ord like, Eq name, Eq like, Eq r, Truthy r) => Likelyhood name like -
 select (Likelyhood name (P like)) reality = Evidence name (P (if reality <= like then yes else no))
 
 generate_population ::
-    (Truthy p, Eq p, Eq name, Ord like, Fractional like) =>
-    Int -> [Likelyhood name like] -> CausalModel name p -> [[Evidence name p]]
+    (Truthy p, Eq p, Eq name, Ord like, Fractional like, Ord name, Ord p) =>
+    Int -> [Likelyhood name like] -> CausalModel name p -> Population name p
 
 generate_population tosses potentials model =
-    map (eval_causalmodel model) scenarios
+    map ((flip eval_causalmodel) model) scenarios
     where
         synthetic_evidence = synthesize_evidence tosses potentials
         scenarios = combine synthetic_evidence
@@ -47,3 +49,6 @@ many_tosses how_many = take how_many $ map (\n -> (fromIntegral n) / (fromIntegr
 
 count :: Eq a => a -> [a] -> Int
 count a as = length $ filter (==a) as
+
+population_count :: (Eq name, Eq p, Ord name, Ord p) => Evidence name p -> Population name p -> Int
+population_count e pop = count e $ concat (map observations_toList pop)

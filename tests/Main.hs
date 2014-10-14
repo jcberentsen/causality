@@ -10,6 +10,7 @@ import PopulationTests
 import CausalModelTests
 import MonohybridCrossTests
 import DihybridCrossTests
+import ChainedModelTests
 
 all_tests =
     testGroup "All"
@@ -17,6 +18,7 @@ all_tests =
         , population_test_group
         , monohybrid_test_group
         , dihybrid_test_group
+        , chained_model_test_group
         ]
 
 main :: IO ()

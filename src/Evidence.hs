@@ -21,8 +21,11 @@ import Data.Typeable
 import GHC.Generics
 import Data.Aeson.TH
 
+import Data.Set (Set)
+import qualified Data.Set as Set
+
 data Probability p = P p
-    deriving (Generic, Show, Typeable, Eq)
+    deriving (Generic, Show, Typeable, Eq, Ord)
 $(deriveJSON defaultOptions ''Probability)
 
 class Truthy p where
@@ -45,10 +48,21 @@ instance Truthy p => Truthy (Probability p) where
     yes = P yes
     no = P no
 
-data Evidence name p = Evidence name (Probability p)
-    deriving (Generic, Show, Typeable, Eq)
+data Evidence name p = Evidence name (Probability p) | NoEvidence name -- Note: consider using Maybe Evidence where appropriate?
+    deriving (Generic, Show, Typeable, Eq, Ord)
 
 $(deriveJSON defaultOptions ''Evidence)
+
+type Observations name p = Set (Evidence name p)
+
+conclude :: (Ord p, Ord name) => [Evidence name p] -> Observations name p
+conclude ev = Set.fromList ev
+
+join_observations :: (Ord name, Ord p) => [Observations name p] -> Observations name p
+join_observations obs = Set.unions obs
+
+observations_toList :: Observations name p -> [Evidence name p]
+observations_toList obs = Set.toList obs
 
 anyEvidenceFor :: Truthy b => [Evidence a b] -> Bool
 anyEvidenceFor = any (\(Evidence _ p) -> truthy p)
@@ -63,6 +77,9 @@ intersectWithObservations claims observations =
 
 contradicting :: (Eq a, Eq b) => Evidence a b -> Evidence a b -> Bool
 contradicting (Evidence a pa) (Evidence b pb) = if a == b then if pa /= pb then True else False else False
+contradicting (Evidence a pa) (NoEvidence b) = False
+contradicting (NoEvidence a) (Evidence b pb) = False
+contradicting (NoEvidence a) (NoEvidence b) = False
 
 -- or
 (<|>) :: Evidence name prob -> Evidence name prob -> [Evidence name prob]
@@ -80,14 +97,18 @@ untruly name = void $ fact name
 counterfact :: Truthy a => name -> Evidence name a
 counterfact name = Evidence name no
 
-no_evidence_for :: Truthy a => name -> Evidence name a
-no_evidence_for name = Evidence name no
-
 isFact :: Truthy a => Evidence name a -> Bool
 isFact (Evidence _ (P v)) = truthy v
+isFact (NoEvidence _ ) = False
+
+isEvidenced :: Evidence name a -> Bool
+isEvidenced (Evidence _ _) = True
+isEvidenced _ = False
 
 void :: Truthy a => Evidence name a -> Evidence name a
 void (Evidence name _) = Evidence name no
+void (NoEvidence name) = Evidence name no
 
 dual :: Truthy a => Evidence name a -> Evidence name a
 dual (Evidence name p) = Evidence name (if truthy p then no else yes)
+dual (NoEvidence name) = NoEvidence name

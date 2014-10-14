@@ -16,23 +16,23 @@ import Likelyhood
 
 population_test_group = $(testGroupGenerator)
 
-prop_ignorant_model_generates_no_population seed = Population.sample seed model == []
+prop_ignorant_model_generates_no_population seed = Population.sample seed model == conclude []
     where model = Ignorance :: CausalModel Bool Bool
 
-prop_evidently_model_always_generates_fact seed = Population.sample seed fact_model == [ a_fact ]
+prop_evidently_model_always_generates_fact seed = Population.sample seed fact_model == conclude [ a_fact ]
     where fact_model = Evidently [a_fact]
           a_fact = fact "a fact" :: Evidence String Bool
 
 prop_sampling_cause_generates_cause_and_effect seed
     = seed == yes ==>
-        Population.sample seed causal_model == [ cause, effect ]
+        Population.sample seed causal_model == conclude [ cause, effect ]
     where causal_model = Causally cause effect
           cause = fact "cause" :: Evidence String Bool
           effect = fact "effect" :: Evidence String Bool
 
 prop_sampling_cause_with_false_evidence_yields_counterfacts seed
     = seed == no ==>
-        Population.sample seed causal_model == [ void cause, void effect ]
+        Population.sample seed causal_model == conclude [ void cause, void effect ]
     where causal_model = Causally cause effect
           cause = fact "cause" :: Evidence String Bool
           effect = fact "effect" :: Evidence String Bool
@@ -63,8 +63,8 @@ case_rain_sprinkler_likelyhood_yields_major_wetness_population =
         dry_count @?= 45
         (wet_count + dry_count) @?= observation_count
     where
-        wet_count = count (truly "wet") (concat conclusions)
-        dry_count = count (untruly "wet") (concat conclusions)
+        wet_count = count (truly "wet") (concat (map observations_toList conclusions))
+        dry_count = count (untruly "wet") (concat (map observations_toList conclusions))
         model = AnyCause [truly "rain", truly "sprinklers"] $ truly "wet"
         conclusions = generate_population tosses rain_sprinklers_priors model
         tosses = 10

@@ -12,31 +12,9 @@ import Test.Tasty.HUnit
 import Model
 import Evidence
 
+import qualified Data.Set as Set
+
 causal_model_test_group = $(testGroupGenerator)
-
-gravity = Causality "gravity" "falling"
-
-case_gravity_causes_falling = do evidence_for_falling @?= eval_cause gravity gravity_is_a_fact
-
-gravity_is_a_fact :: Evidence String Bool
-gravity_is_a_fact = fact "gravity"
-
-evidence_for_falling :: Evidence String Bool
-evidence_for_falling = fact "falling"
-
-case_no_gravity_causes_no_falling = do eval_cause gravity universe_with_no_gravity @?= no_evidence_for_falling
-
-universe_with_no_gravity :: Evidence String Bool
-universe_with_no_gravity = Evidence "gravity" no
-
-no_evidence_for_falling :: Evidence String Bool
-no_evidence_for_falling = Evidence "falling" no
-
-prop_evidence_for_cause_yields_effect (causality@(Causality cause effect))
-    = effect_caused  == (eval_cause causality (Evidence cause yes))
-        where
-            _types = (causality :: Causality String, yes :: Probability Bool)
-            effect_caused = (Evidence effect yes) :: Evidence String Bool
 
 -- Rain or sprinklers cause wetness
 -- Causal distribution
@@ -67,52 +45,52 @@ not_wet = void wet
 
 -- CausalModel
 prop_ignorance_only_yield_original_evidence evidence =
-    eval_causalmodel Ignorance evidence == evidence
+    eval_causalmodel evidence Ignorance == conclude evidence
         where _types = evidence :: [Evidence () Bool]
 
 prop_evidently_model_yields_evidence evidence =
-    eval_causalmodel (Evidently [raining]) evidence == evidence ++ [raining]
+    eval_causalmodel evidence (Evidently [raining]) == (conclude $ evidence ++ [raining])
         where _types = evidence :: [Evidence String Bool]
 
 prop_fact_causes_effect any_fact =
-    isFact any_fact ==> eval_causalmodel (Causally any_fact raining) [any_fact] == any_fact : [raining]
+    isFact any_fact ==> eval_causalmodel [any_fact] (Causally any_fact raining) == (conclude $ any_fact : [raining])
         where _types = any_fact :: Evidence String Bool
 
 prop_AnyCause_yields_effect_given_any_of_the_causal_facts any_fact =
-    isFact any_fact ==> eval_causalmodel (AnyCause [any_fact] raining) [any_fact] == any_fact : [raining]
+    isFact any_fact ==> eval_causalmodel [any_fact] (AnyCause [any_fact] raining) == (conclude $ any_fact : [raining])
         where _types = any_fact :: Evidence String Bool
 
 prop_AnyCause_causes_nothing_given_no_facts cause =
-    isFact cause ==> eval_causalmodel (AnyCause [cause] raining) [] == []
+    isFact cause ==> eval_causalmodel [] (AnyCause [cause] raining) == (conclude [])
         where _types = cause :: Evidence String Bool
 
 rain_or_sprinklers_cause_wetness = AnyCause [raining, sprinklers] wet
 
 evidence_of_rain_and_sprinklers = [raining, sprinklers]
 case_rain_or_sprinklers_causes_wetness =
-    do eval_causalmodel rain_or_sprinklers_cause_wetness evidence_of_rain_and_sprinklers
-       @?= evidence_of_rain_and_sprinklers ++ [wet]
+    do eval_causalmodel evidence_of_rain_and_sprinklers rain_or_sprinklers_cause_wetness
+       @?= (conclude $ evidence_of_rain_and_sprinklers ++ [wet])
 
 case_no_evidence_cause_no_effect =
-    do eval_causalmodel rain_or_sprinklers_cause_wetness [] @?= []
+    do eval_causalmodel [] rain_or_sprinklers_cause_wetness @?= conclude []
 
 case_irrelevant_evidence_does_not_cause_rain =
-    do eval_causalmodel rain_or_sprinklers_cause_wetness irrelevant_evidence @?= irrelevant_evidence
+    do eval_causalmodel irrelevant_evidence rain_or_sprinklers_cause_wetness @?= (conclude irrelevant_evidence)
     where irrelevant_evidence = [fact "irrelevant"]
 
 prop_evidence_contradicts_counter_evidence evidence =
-    contradicting evidence (dual evidence)
+    isEvidenced evidence ==> contradicting evidence (dual evidence)
         where _types = evidence :: Evidence Bool Bool
 
 case_no_rain_nor_sprinklers_cause_not_wet =
-    do eval_causalmodel rain_or_sprinklers_cause_wetness observations @?= observations ++ [not_wet]
+    do eval_causalmodel observations rain_or_sprinklers_cause_wetness @?= (conclude $ observations ++ [not_wet])
         where observations = [not_raining, no_sprinklers]
 
 prop_operator_model (cause1, cause2, effect) =
-    cause1 <|> cause2 |> effect ==  AnyCause [cause1, cause2] effect
+    cause1 <|> cause2 |> effect == AnyCause [cause1, cause2] effect
         where _types = [cause1, cause2, effect] :: [Evidence String Bool]
 
 -- AllCause
 prop_AllCause_causes_effect_given_all_facts facts =
-        elem raining $ eval_causalmodel (AllCause facts raining) facts
+        Set.member raining $ eval_causalmodel facts (AllCause facts raining)
         where _types = facts :: [Evidence String Bool]

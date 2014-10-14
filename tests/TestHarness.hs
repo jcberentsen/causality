@@ -13,5 +13,4 @@ import Model
 -- derive arbitrary for code under test
 derive makeArbitrary ''Probability
 derive makeArbitrary ''Evidence
-derive makeArbitrary ''Causality
 

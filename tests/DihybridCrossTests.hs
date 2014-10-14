@@ -13,6 +13,8 @@ import Model
 --import Population
 --import Likelyhood
 
+import qualified Data.Set as Set
+
 dihybrid_test_group = $(testGroupGenerator)
 
 -- Alleles B (brown), b (blue), G (green), g (offgreen)
@@ -69,7 +71,7 @@ both_bb = truly "bb"
 cause_green = AllCause [allele_G, both_bb] green :: CausalModel String Bool
 
 prop_required_cause_for_green_phenotype =
-    elem green $ eval_causalmodel cause_green [allele_G, both_bb]
+    Set.member green $ eval_causalmodel [allele_G, both_bb] cause_green
 
 prop_only_G_allele_not_enough_to_conclude_green_phenotype =
-    not (elem green $ eval_causalmodel cause_green [allele_G])
+    not (Set.member green $ eval_causalmodel [allele_G] cause_green)
