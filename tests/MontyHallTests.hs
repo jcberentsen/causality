@@ -9,9 +9,10 @@ import Test.Tasty.TH
 import Test.Tasty.HUnit
 import Test.Tasty.QuickCheck as QC
 
---import Model
+import Model
 import Evidence
 import Likelyhood
+import Population
 
 monty_hall_test_group = $(testGroupGenerator)
 
@@ -27,11 +28,11 @@ monty_hall_test_group = $(testGroupGenerator)
 player_chose_door_1 :: Evidence String Bool
 player_chose_door_1 = fact "user chose door 1"
 
-car_behind_door_1, car_behind_door_2, car_behind_door_3 :: Evidence String Bool
+win_door_1, win_door_2, win_door_3 :: Evidence String Bool
 
-car_behind_door_1 = fact "car behind door 1"
-car_behind_door_2 = fact "car behind door 2"
-car_behind_door_3 = fact "car behind door 3"
+win_door_1 = fact "car behind door 1"
+win_door_2 = fact "car behind door 2"
+win_door_3 = fact "car behind door 3"
 
 host_reveals_door_2, host_reveals_door_3 :: Evidence String Bool
 host_reveals_door_2 = fact "host opened 2"
@@ -44,9 +45,13 @@ host_reveals_door_3 = fact "host opened 3"
 -- we need the population of car_behind_door_N
 -- Alternative is a likelyhood of multiple facts
 car_door_likelyhood :: Alternatives String Bool
-car_door_likelyhood = Alternatives [car_behind_door_1, car_behind_door_2, car_behind_door_2]
+car_door_likelyhood = Alternatives [win_door_1, win_door_2, win_door_3]
 
-case_car_population = True @?= False
+case_car_toss = select 0.1 car_door_likelyhood @?= [win_door_1, void win_door_2, void win_door_3]
 
-prop_fail = False
+case_car_population = conclusions @?= []
+    where
+        conclusions = [False] -- generate_population 3 car_door_likelyhood (Ignorance::CausalModel String Bool)
+
+-- -- prop_fail = False
 

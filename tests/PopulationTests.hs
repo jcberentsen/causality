@@ -43,11 +43,11 @@ prop_likelyhood_generates_evidence toss =
     where
         p = P 0.5 :: Probability Float
 
-case_select_alternative =
+case_select_alternatives =
     select toss (Alternatives [heads, tails])
     @?= [heads, not_tails]
     where
-        toss = 0.5 :: Double
+        toss = 0.1 :: Double
         heads = fact "heads" :: Evidence String Bool
         tails = fact "tails"
         not_tails = dual tails

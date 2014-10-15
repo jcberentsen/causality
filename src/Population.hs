@@ -19,7 +19,6 @@ sample seed model =
                 Causally cause _ -> [if seed == yes then cause else void cause]
                 _ -> []
 
-
 generate_population ::
     (Truthy p, Eq p, Eq name, Ord like, Fractional like, Ord name, Ord p) =>
     Int -> [Likelyhood name like] -> CausalModel name p -> Population name p

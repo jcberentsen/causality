@@ -12,6 +12,10 @@ data Likelyhood name p =
 data Alternatives name r = Alternatives [Evidence name r]
     deriving (Show, Eq)
 
+data Potential name p r =
+      Likely (Likelyhood name p)
+    | Alternatively (Alternatives name r)
+
 likely :: Truthy a => name -> a -> Likelyhood name a
 likely name p = Likelyhood name (P p)
 
@@ -23,8 +27,9 @@ pick :: (Ord like, Eq name, Eq like, Eq r, Truthy r) => like -> Likelyhood name 
 pick random (Likelyhood name (P like)) =
     Evidence name (P (if random <= like then yes else no))
 
--- Select on alternative should yield mutually exclusive evidence
-select :: (Ord random, Eq name, Eq r, Truthy r) => random -> Alternatives name r -> [Evidence name r]
-select _random (Alternatives alts) = map decide alts
+-- Select from alternatives should yield mutually exclusive evidence
+select :: (RealFrac random, Eq name, Eq r, Truthy r) => random -> Alternatives name r -> [Evidence name r]
+select random (Alternatives alts) = map decide (zip alts [0..])
     where
-        decide alt = alt
+        index = truncate $ random * (fromRational (toRational (length alts)))
+        decide (alt, idx) = if idx == index then alt else dual alt
