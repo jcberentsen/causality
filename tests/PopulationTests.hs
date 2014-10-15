@@ -52,6 +52,19 @@ case_select_alternatives =
         tails = fact "tails"
         not_tails = dual tails
 
+case_generate_alternatives_population =
+    generate_population 2 (Alternatively (Alternatives [heads, tails])) Ignorance
+    @?= [ conclude [not_heads, not_tails]
+        , conclude [not_heads, tails]
+        , conclude [heads, not_tails]
+        , conclude [heads, tails]
+        ]
+    where
+        heads = fact "heads" :: Evidence String Bool
+        tails = fact "tails"
+        not_heads = dual heads
+        not_tails = dual tails
+
 prop_unlikely_evidence =
     (length (filter isFact synthetic_evidence)) < 10
     where
@@ -76,7 +89,7 @@ case_rain_sprinkler_likelyhood_yields_major_wetness_population =
         wet_count = count (truly "wet") (concat (map observations_toList conclusions))
         dry_count = count (untruly "wet") (concat (map observations_toList conclusions))
         model = AnyCause [truly "rain", truly "sprinklers"] $ truly "wet"
-        conclusions = generate_population tosses rain_sprinklers_priors model
+        conclusions = generate_population tosses (Likely rain_sprinklers_priors) model
         tosses = 10
         observation_count = tosses * tosses
 

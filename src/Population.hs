@@ -21,12 +21,14 @@ sample seed model =
 
 generate_population ::
     (Truthy p, Eq p, Eq name, Ord like, Fractional like, Ord name, Ord p) =>
-    Int -> [Likelyhood name like] -> CausalModel name p -> Population name p
+    Int -> Potential name like p -> CausalModel name p -> Population name p
 
-generate_population tosses potentials model =
+generate_population tosses potential model =
     map ((flip eval_causalmodel) model) scenarios
     where
-        synthetic_evidence = synthesize_evidence tosses potentials
+        synthetic_evidence = case potential of
+            Likely likelyhoods -> synthesize_evidence tosses likelyhoods
+            Alternatively _alts -> []
         scenarios = combine synthetic_evidence
 
 synthesize_evidence :: (Truthy c, Ord b, Eq c, Eq a, Fractional b) => Int -> [Likelyhood a b] -> [[Evidence a c]]
