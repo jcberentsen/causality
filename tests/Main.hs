@@ -12,6 +12,7 @@ import MonohybridCrossTests
 import DihybridCrossTests
 import ChainedModelTests
 import JoinModelTests
+import MontyHallTests
 
 all_tests =
     testGroup "All"
@@ -21,6 +22,7 @@ all_tests =
         , dihybrid_test_group
         , chained_model_test_group
         , join_model_test_group
+        , monty_hall_test_group
         ]
 
 main :: IO ()

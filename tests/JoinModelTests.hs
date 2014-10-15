@@ -6,14 +6,10 @@ module JoinModelTests where
 import TestHarness ()
 
 import Test.Tasty.TH
---import Test.Tasty.QuickCheck as QC
 import Test.Tasty.HUnit
 
 import Model
 import Evidence
---import Observations
-
---import qualified Data.Set as Set
 
 join_model_test_group = $(testGroupGenerator)
 

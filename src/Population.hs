@@ -19,9 +19,6 @@ sample seed model =
                 Causally cause _ -> [if seed == yes then cause else void cause]
                 _ -> []
 
-select :: (Ord like, Eq name, Eq like, Eq r, Truthy r) => Likelyhood name like -> like -> Evidence name r
-select (Likelyhood name (P like)) reality =
-    Evidence name (P (if reality <= like then yes else no))
 
 generate_population ::
     (Truthy p, Eq p, Eq name, Ord like, Fractional like, Ord name, Ord p) =>
@@ -35,7 +32,7 @@ generate_population tosses potentials model =
 
 synthesize_evidence :: (Truthy c, Ord b, Eq c, Eq a, Fractional b) => Int -> [Likelyhood a b] -> [[Evidence a c]]
 synthesize_evidence how_many priors =
-    map (\prior -> map (\toss -> Population.select prior toss) (many_tosses how_many)) priors
+    map (\prior -> map (\toss -> Likelyhood.pick toss prior) (many_tosses how_many)) priors
 
 -- combine [[a,b...], [c,d...]] = [[a, c], [a, d], [a, ...], [b, c], [b, d], [b, ...], ]]
 -- TODO can this be made simpler, readable, evidently correct?

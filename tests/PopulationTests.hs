@@ -39,16 +39,25 @@ prop_sampling_cause_with_false_evidence_yields_counterfacts seed
           effect = fact "effect" :: Evidence String Bool
 
 prop_likelyhood_generates_evidence toss =
-    (Population.select (Likelyhood "heads" p) toss) == (Evidence "heads" (P (toss < 0.5)))
+    (pick toss (Likelyhood "heads" p)) == (Evidence "heads" (P (toss < 0.5)))
     where
         p = P 0.5 :: Probability Float
+
+case_select_alternative =
+    select toss (Alternatives [heads, tails])
+    @?= [heads, not_tails]
+    where
+        toss = 0.5 :: Double
+        heads = fact "heads" :: Evidence String Bool
+        tails = fact "tails"
+        not_tails = dual tails
 
 prop_unlikely_evidence =
     (length (filter isFact synthetic_evidence)) < 10
     where
         how_many = 100
-        synthetic_evidence = map likelyhood (many_tosses how_many)
-        likelyhood = Population.select (Likelyhood "unlikely" low_prob) :: Float -> Evidence String Bool
+        synthetic_evidence = map picker (many_tosses how_many)
+        picker = (flip pick) (Likelyhood "unlikely" low_prob) :: Float -> Evidence String Bool
         low_prob = P 0.01 :: Probability Float
 
 case_combine = do
