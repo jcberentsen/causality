@@ -58,10 +58,10 @@ eval_causalmodel observations (Causally { _causer=(Evidence c _), _effect=(Evide
 eval_causalmodel observations (AnyCause { _causes=cs, _effect=e }) =
     conclude $ observations ++ case intersectWithObservations cs observations of
         [] -> []
-        observed_causes -> if anyEvidenceFor observed_causes then [e] else [dual e]
+        observed_causes -> if anyEvidenceFor observed_causes then [e] else []
 
 eval_causalmodel observations (AllCause { _causes=cs, _effect=e }) =
-    conclude $ observations ++ if observations == cs then [e] else [dual e]
+    conclude $ observations ++ if observations == cs then [e] else []
 
 eval_causalmodel observations model@(Multiple { _causalities=cs }) =
     let conclusions = join_observations (map (eval_causalmodel observations) cs)

@@ -79,11 +79,11 @@ case_combine = do
 case_rain_sprinkler_likelyhood_yields_major_wetness_population =
     do
         wet_count @?= 55
-        dry_count @?= 45
-        (wet_count + dry_count) @?= observation_count
+        --dry_count @?= 45
+        --(wet_count + dry_count) @?= observation_count
     where
         wet_count = count (truly "wet") (concat (map observations_toList conclusions))
-        dry_count = count (untruly "wet") (concat (map observations_toList conclusions))
+        --dry_count = count (untruly "wet") (concat (map observations_toList conclusions))
         model = AnyCause [truly "rain", truly "sprinklers"] $ truly "wet"
         conclusions = generate_population tosses (Likely rain_sprinklers_priors) model
         tosses = 10

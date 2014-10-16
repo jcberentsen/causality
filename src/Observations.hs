@@ -21,3 +21,6 @@ join_observations obs = Set.unions obs
 observations_toList :: Observations name p -> [Evidence name p]
 observations_toList obs = Set.toList obs
 
+
+has_fact :: (Ord name, Ord p) => Evidence name p -> Observations name p -> Bool
+has_fact e o = Set.member e o

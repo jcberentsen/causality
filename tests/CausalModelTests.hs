@@ -83,8 +83,8 @@ prop_evidence_contradicts_counter_evidence evidence =
     contradicting evidence (dual evidence)
         where _types = evidence :: Evidence Bool Bool
 
-case_no_rain_nor_sprinklers_cause_not_wet =
-    do eval_causalmodel observations rain_or_sprinklers_cause_wetness @?= (conclude $ observations ++ [not_wet])
+case_no_rain_nor_sprinklers_cause_no_evidence_for_wet =
+    do eval_causalmodel observations rain_or_sprinklers_cause_wetness @?= (conclude $ observations ++ [])
         where observations = [not_raining, no_sprinklers]
 
 prop_operator_model (cause1, cause2, effect) =

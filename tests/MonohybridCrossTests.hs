@@ -35,13 +35,6 @@ monohybrid_test_group = $(testGroupGenerator)
 allele_B = truly "B"
 allele_b = truly "b"
 
--- Positional alleles in genes
-allele_B1 = truly "B1"
-allele_B2 = truly "B2"
-
-allele_b1 = truly "b1"
-allele_b2 = truly "b2"
-
 -- Phenotype facts
 blue = truly "blue"
 brown = truly "brown"
@@ -68,7 +61,6 @@ case_synthetic_evidence = do
 
 case_when_random_occurences_of_allele_B_and_b_half_population_is_brown = do
     -- allele_B explains it
-    population_count (untruly "brown") crossings @?= 2
     population_count (truly "brown") crossings @?= 2
     where
         crossings = generate_population 2 priors cause_brown
