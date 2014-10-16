@@ -52,18 +52,14 @@ case_select_alternatives =
         tails = fact "tails"
         not_tails = dual tails
 
-case_generate_alternatives_population =
+case_a_coin_has_two_possibilities =
     generate_population 2 (Alternatively (Alternatives [heads, tails])) Ignorance
-    @?= [ conclude [not_heads, not_tails]
-        , conclude [not_heads, tails]
-        , conclude [heads, not_tails]
-        , conclude [heads, tails]
+    @?= [ conclude [heads, dual tails]
+        , conclude [dual heads, tails]
         ]
     where
         heads = fact "heads" :: Evidence String Bool
         tails = fact "tails"
-        not_heads = dual heads
-        not_tails = dual tails
 
 prop_unlikely_evidence =
     (length (filter isFact synthetic_evidence)) < 10

@@ -29,7 +29,7 @@ pick random (Likelyhood name (P like)) =
 
 -- Select from alternatives should yield mutually exclusive evidence
 select :: (RealFrac random, Eq name, Eq r, Truthy r) => random -> Alternatives name r -> [Evidence name r]
-select random (Alternatives alts) = map decide (zip alts [0..])
+select random (Alternatives alts) = map decide (zip alts [(0::Int)..])
     where
         index = truncate $ random * (fromRational (toRational (length alts)))
         decide (alt, idx) = if idx == index then alt else dual alt
@@ -37,4 +37,4 @@ select random (Alternatives alts) = map decide (zip alts [0..])
 all_combinations :: Truthy r => Alternatives name r -> [[Evidence name r]]
 all_combinations (Alternatives alts) = map indicate [1..length alts]
     where
-        indicate index = map (\(alt, id) -> if id == index then alt else dual alt) (zip alts [1..])
+        indicate indicator = map (\(alt, index) -> if index == indicator then alt else dual alt) (zip alts [1..])
