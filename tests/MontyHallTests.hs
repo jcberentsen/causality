@@ -62,9 +62,6 @@ case_car_population = conclusions @?=
     where
         conclusions = generate_population 3 (Alternatively car_door_likelyhood) (Ignorance::CausalModel String Bool)
 
-host_reveal_likelyhood :: Alternatives String Bool
-host_reveal_likelyhood = Alternatives [host_reveals_2, host_reveals_3]
-
 host_opens = Multiple
     [ Causally win_door_1 host_reveals_2 -- consider host can choose random here?
     , Causally win_door_2 host_reveals_3 -- forced
@@ -100,4 +97,12 @@ prop_staying_game_lose_3 = has_fact player_loses $ eval_causalmodel [win_door_3]
 prop_switching_game_lose_1 = has_fact player_loses $ eval_causalmodel [win_door_1] switching_game
 prop_switching_game_win_2 = has_fact player_wins $ eval_causalmodel [win_door_2] switching_game
 prop_switching_game_win_3 = has_fact player_wins $ eval_causalmodel [win_door_3] switching_game
+
+case_switching_population = win_count switching_game @?= 2
+    where
+        win_count game = population_count player_wins $ generate_population 3 (Alternatively car_door_likelyhood) game
+
+case_staying_population = win_count staying_game @?= 1
+    where
+        win_count game = population_count player_wins $ generate_population 3 (Alternatively car_door_likelyhood) game
 

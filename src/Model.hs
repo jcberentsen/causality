@@ -52,8 +52,8 @@ eval_causalmodel :: (Truthy prob, Eq prob, Eq name, Ord prob, Ord name) =>
 
 eval_causalmodel observations Ignorance = conclude observations
 eval_causalmodel observations (Evidently { _evidence = e }) = conclude $ observations ++ e
-eval_causalmodel observations (Causally { _causer=(Evidence c _), _effect=(Evidence e _) }) =
-    join_observations $ [(conclude $ observations)] ++ map (eval_cause c e) observations
+eval_causalmodel observations (Causally { _causer=c, _effect=eff }) =
+    join_observations $ [(conclude $ observations)] ++ [eval_cause c eff observations]
 
 eval_causalmodel observations (AnyCause { _causes=cs, _effect=e }) =
     conclude $ observations ++ case intersectWithObservations cs observations of
@@ -61,7 +61,7 @@ eval_causalmodel observations (AnyCause { _causes=cs, _effect=e }) =
         observed_causes -> if anyEvidenceFor observed_causes then [e] else []
 
 eval_causalmodel observations (AllCause { _causes=cs, _effect=e }) =
-    conclude $ observations ++ if observations == cs then [e] else []
+    conclude $ observations ++ if Set.isSubsetOf (conclude cs) (conclude observations) then [e] else []
 
 eval_causalmodel observations model@(Multiple { _causalities=cs }) =
     let conclusions = join_observations (map (eval_causalmodel observations) cs)
@@ -85,7 +85,7 @@ causes ∴ effect = AnyCause causes effect
 (|>) = (∴)
 
 -- evaluating a cause yields the effect only if there is evidence present (missing or irrelevant evidence yields nothing)
-eval_cause :: (Eq name, Eq a, Truthy a, Ord name, Ord a) => name -> name -> Evidence name a -> Observations name a
-eval_cause cause effect (Evidence evidence val)
-    = if evidence == cause then conclude [Evidence effect val] else Set.empty
+eval_cause :: (Eq name, Eq a, Truthy a, Ord name, Ord a) => Evidence name a -> Evidence name a -> [Evidence name a] -> Observations name a
+eval_cause cause effect evidence
+    = if elem cause evidence then conclude [effect] else Set.empty
 

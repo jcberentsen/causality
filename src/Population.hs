@@ -10,15 +10,6 @@ import Likelyhood
 
 type Population name p = [Observations name p]
 
-sample :: (Eq name, Eq p, Truthy p, Ord name, Ord p) => p -> CausalModel name p -> Observations name p
-sample seed model =
-    eval_causalmodel synthetic_evidence model
-    where
-        synthetic_evidence =
-            case model of
-                Causally cause _ -> [if seed == yes then cause else void cause]
-                _ -> []
-
 generate_population ::
     (Truthy p, Eq p, Eq name, Ord like, Fractional like, Ord name, Ord p) =>
     Int -> Potential name like p -> CausalModel name p -> Population name p
