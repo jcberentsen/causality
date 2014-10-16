@@ -23,13 +23,12 @@ generate_population ::
     (Truthy p, Eq p, Eq name, Ord like, Fractional like, Ord name, Ord p) =>
     Int -> Potential name like p -> CausalModel name p -> Population name p
 
-generate_population tosses potential model =
+generate_population how_many_tosses potential model =
     map ((flip eval_causalmodel) model) scenarios
     where
-        synthetic_evidence = case potential of
-            Likely likelyhoods -> synthesize_evidence tosses likelyhoods
-            Alternatively _alts -> []
-        scenarios = combine synthetic_evidence
+        scenarios = case potential of
+            Likely likelyhoods -> combine $ synthesize_evidence how_many_tosses likelyhoods
+            Alternatively alts -> all_combinations alts
 
 synthesize_evidence :: (Truthy c, Ord b, Eq c, Eq a, Fractional b) => Int -> [Likelyhood a b] -> [[Evidence a c]]
 synthesize_evidence how_many priors =

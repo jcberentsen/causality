@@ -13,6 +13,7 @@ import Model
 import Evidence
 import Likelyhood
 import Population
+import Observations
 
 monty_hall_test_group = $(testGroupGenerator)
 
@@ -49,9 +50,13 @@ car_door_likelyhood = Alternatives [win_door_1, win_door_2, win_door_3]
 
 case_car_toss = select 0.1 car_door_likelyhood @?= [win_door_1, void win_door_2, void win_door_3]
 
-case_car_population = conclusions @?= []
+case_car_population = conclusions @?=
+        [ conclude [win_door_1, void win_door_2, void win_door_3]
+        , conclude [void win_door_1, win_door_2, void win_door_3]
+        , conclude [void win_door_1, void win_door_2, win_door_3]
+        ]
     where
-        conclusions = [False] -- generate_population 3 car_door_likelyhood (Ignorance::CausalModel String Bool)
+        conclusions = generate_population 3 (Alternatively car_door_likelyhood) (Ignorance::CausalModel String Bool)
 
 -- -- prop_fail = False
 

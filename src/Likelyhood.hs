@@ -33,3 +33,8 @@ select random (Alternatives alts) = map decide (zip alts [0..])
     where
         index = truncate $ random * (fromRational (toRational (length alts)))
         decide (alt, idx) = if idx == index then alt else dual alt
+
+all_combinations :: Truthy r => Alternatives name r -> [[Evidence name r]]
+all_combinations (Alternatives alts) = map indicate [1..length alts]
+    where
+        indicate index = map (\(alt, id) -> if id == index then alt else dual alt) (zip alts [1..])
