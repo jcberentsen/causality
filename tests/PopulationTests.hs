@@ -32,11 +32,12 @@ case_select_alternatives =
         not_tails = dual tails
 
 case_a_coin_has_two_possibilities =
-    generate_population 2 (Alternatively (Alternatives [heads, tails])) Ignorance
+    generate_population 2 potentials Ignorance
     @?= [ conclude [heads, dual tails]
         , conclude [dual heads, tails]
         ]
     where
+        potentials = Alternatively (Alternatives [heads, tails]) :: Potential String Float Bool
         heads = fact "heads" :: Evidence String Bool
         tails = fact "tails"
 
@@ -63,7 +64,6 @@ case_rain_sprinkler_likelyhood_yields_major_wetness_population =
         model = AnyCause [truly "rain", truly "sprinklers"] $ truly "wet"
         conclusions = generate_population tosses (Likely rain_sprinklers_priors) model
         tosses = 10
-        observation_count = tosses * tosses
 
 case_rain_sprinkler_likely_synthetic_population =
     synthetic_evidence @?=

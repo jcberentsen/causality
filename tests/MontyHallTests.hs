@@ -52,7 +52,7 @@ player_loses = fact "lose"
 car_door_likelyhood :: Alternatives String Bool
 car_door_likelyhood = Alternatives [win_door_1, win_door_2, win_door_3]
 
-case_car_toss = select 0.1 car_door_likelyhood @?= [win_door_1, void win_door_2, void win_door_3]
+case_car_toss = select (0.1::Double) car_door_likelyhood @?= [win_door_1, void win_door_2, void win_door_3]
 
 case_car_population = conclusions @?=
         [ conclude [win_door_1, void win_door_2, void win_door_3]
@@ -60,7 +60,8 @@ case_car_population = conclusions @?=
         , conclude [void win_door_1, void win_door_2, win_door_3]
         ]
     where
-        conclusions = generate_population 3 (Alternatively car_door_likelyhood) (Ignorance::CausalModel String Bool)
+        conclusions = generate_population 3 potential  (Ignorance::CausalModel String Bool)
+        potential = Alternatively car_door_likelyhood :: Potential String Float Bool
 
 host_opens = Multiple
     [ Causally win_door_1 host_reveals_2 -- consider host can choose random here?
@@ -100,9 +101,11 @@ prop_switching_game_win_3 = has_fact player_wins $ eval_causalmodel [win_door_3]
 
 case_switching_population = win_count switching_game @?= 2
     where
-        win_count game = population_count player_wins $ generate_population 3 (Alternatively car_door_likelyhood) game
+        win_count game = population_count player_wins $ generate_population 3 potential  game
+        potential = Alternatively car_door_likelyhood :: Potential String Float Bool
 
 case_staying_population = win_count staying_game @?= 1
     where
-        win_count game = population_count player_wins $ generate_population 3 (Alternatively car_door_likelyhood) game
+        win_count game = population_count player_wins $ generate_population 3 potential game
+        potential = Alternatively car_door_likelyhood :: Potential String Float Bool
 
