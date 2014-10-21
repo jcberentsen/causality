@@ -99,13 +99,9 @@ prop_switching_game_lose_1 = has_fact player_loses $ eval_causalmodel [win_door_
 prop_switching_game_win_2 = has_fact player_wins $ eval_causalmodel [win_door_2] switching_game
 prop_switching_game_win_3 = has_fact player_wins $ eval_causalmodel [win_door_3] switching_game
 
+prize_potential = Alternatively car_door_likelyhood :: Potential String Float Bool
+win_count game = population_count player_wins $ generate_population 3 prize_potential game
+
 case_switching_population = win_count switching_game @?= 2
-    where
-        win_count game = population_count player_wins $ generate_population 3 potential  game
-        potential = Alternatively car_door_likelyhood :: Potential String Float Bool
-
 case_staying_population = win_count staying_game @?= 1
-    where
-        win_count game = population_count player_wins $ generate_population 3 potential game
-        potential = Alternatively car_door_likelyhood :: Potential String Float Bool
-
+prop_MontyHall_switching_beats_staying = win_count switching_game > win_count staying_game
