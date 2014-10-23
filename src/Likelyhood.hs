@@ -12,6 +12,9 @@ data Likelyhood name p =
 data Alternatives name r = Alternatives [Evidence name r]
     deriving (Show, Eq)
 
+alternatively :: Evidence name r -> Alternatives name r -> Alternatives name r
+alternatively alt (Alternatives alts) = Alternatives $ alt:alts
+
 data Potential name p r =
       Likely [Likelyhood name p]
     | Alternatively (Alternatives name r)
