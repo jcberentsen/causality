@@ -60,7 +60,7 @@ case_car_population = conclusions @?=
         , conclude [void win_door_1, void win_door_2, win_door_3]
         ]
     where
-        conclusions = generate_population 3 potential  (Ignorance::CausalModel String Bool)
+        conclusions = generate_population 3 potential (Ignorance::CausalModel String Bool)
         potential = Alternatively car_door_likelyhood :: Potential String Float Bool
 
 host_opens = Multiple
