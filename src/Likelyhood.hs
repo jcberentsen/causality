@@ -1,17 +1,28 @@
-{-# LANGUAGE EmptyDataDecls, GADTs #-}
+{-# LANGUAGE
+      GADTs
+    , DeriveDataTypeable
+    , DeriveGeneric
+    , TemplateHaskell
+    #-}
+
 
 module Likelyhood where
 
 import Evidence
 import Data.List
+import Data.Typeable
+import GHC.Generics
+import Data.Aeson.TH
 
 -- Likelyhood isn't evidence! It can generate distributions of evidence or be derived from populations of Evidence
 data Likelyhood name p =
     Likelyhood name (Probability p)
-    deriving (Show, Eq)
+    deriving (Generic, Show, Typeable, Eq, Ord)
 
 data Alternatives name r = Alternatives [Evidence name r]
-    deriving (Show, Eq)
+    deriving (Generic, Show, Typeable, Eq, Ord)
+
+$(deriveJSON defaultOptions ''Alternatives)
 
 alternatively :: Evidence name r -> Alternatives name r -> Alternatives name r
 alternatively alt (Alternatives alts) = Alternatives $ alt:alts
