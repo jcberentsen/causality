@@ -3,6 +3,7 @@
 module Likelyhood where
 
 import Evidence
+import Data.List
 
 -- Likelyhood isn't evidence! It can generate distributions of evidence or be derived from populations of Evidence
 data Likelyhood name p =
@@ -14,6 +15,9 @@ data Alternatives name r = Alternatives [Evidence name r]
 
 alternatively :: Evidence name r -> Alternatives name r -> Alternatives name r
 alternatively alt (Alternatives alts) = Alternatives $ alt:alts
+
+toggle_alternative :: (Eq r, Eq name) => Evidence name r -> Alternatives name r -> Alternatives name r
+toggle_alternative alt (Alternatives alts) = if elem alt alts then Alternatives (delete alt alts) else Alternatives $ alt:alts
 
 data Potential name p r =
       Likely [Likelyhood name p]
