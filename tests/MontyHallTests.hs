@@ -19,7 +19,7 @@ import Observations
 
 monty_hall_test_group = $(testGroupGenerator)
 
-case_car_toss = select (0.1::Double) car_door_likelyhood @?= [win_door_1, void win_door_2, void win_door_3]
+case_car_toss = select (0.1::Double) (car_door_likelyhood :: Alternatives String Bool) @?= [win_door_1, void win_door_2, void win_door_3]
 
 case_car_population = conclusions @?=
         [ conclude [win_door_1, void win_door_2, void win_door_3]
@@ -30,14 +30,17 @@ case_car_population = conclusions @?=
         conclusions = generate_population 3 potential (Ignorance::CausalModel String Bool)
         potential = Alternatively car_door_likelyhood :: Potential String Float Bool
 
-prop_staying_game_win_1 = has_fact player_wins $ eval_causalmodel [win_door_1] staying_game
-prop_staying_game_lose_2 = has_fact player_loses $ eval_causalmodel [win_door_2] staying_game
-prop_staying_game_lose_3 = has_fact player_loses $ eval_causalmodel [win_door_3] staying_game
+prop_staying_game_win_1 = has_fact player_wins $ eval_causalmodel [win_door] staying_game
+    where win_door :: Evidence String Bool
+          win_door = win_door_1
 
-prop_switching_game_lose_1 = has_fact player_loses $ eval_causalmodel [win_door_1] switching_game
-prop_switching_game_win_2 = has_fact player_wins $ eval_causalmodel [win_door_2] switching_game
-prop_switching_game_win_3 = has_fact player_wins $ eval_causalmodel [win_door_3] switching_game
+prop_staying_game_lose_2 = has_fact (player_loses :: Evidence String Bool) $ eval_causalmodel [win_door_2] staying_game
+prop_staying_game_lose_3 = has_fact (player_loses :: Evidence String Bool) $ eval_causalmodel [win_door_3] staying_game
 
-case_switching_population = win_count switching_game @?= 2
-case_staying_population = win_count staying_game @?= 1
-prop_MontyHall_switching_beats_staying = win_count switching_game > win_count staying_game
+prop_switching_game_lose_1 = has_fact (player_loses :: Evidence String Bool) $ eval_causalmodel [win_door_1] switching_game
+prop_switching_game_win_2 = has_fact (player_wins :: Evidence String Bool) $ eval_causalmodel [win_door_2] switching_game
+prop_switching_game_win_3 = has_fact (player_wins :: Evidence String Bool) $ eval_causalmodel [win_door_3] switching_game
+
+case_switching_population = win_count (switching_game :: CausalModel String Bool) @?= 2
+case_staying_population = win_count (staying_game :: CausalModel String Bool) @?= 1
+prop_MontyHall_switching_beats_staying = win_count (switching_game :: CausalModel String Bool) > win_count (staying_game :: CausalModel String Bool)

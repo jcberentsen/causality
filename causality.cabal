@@ -22,6 +22,7 @@ library
     , Evidence
     , Observations
     , Examples.MontyHall
+    , Examples.DihybridCross
 
   -- other-modules:       
   -- other-extensions:    
