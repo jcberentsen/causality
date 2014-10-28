@@ -21,6 +21,7 @@ library
     , Likelyhood
     , Evidence
     , Observations
+    , Examples.MontyHall
 
   -- other-modules:       
   -- other-extensions:    
