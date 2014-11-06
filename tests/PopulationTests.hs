@@ -49,7 +49,6 @@ case_summarize_coin_toss_population =
         heads = fact "heads" :: Evidence String Bool
         tails = fact "tails"
 
-
 prop_unlikely_evidence =
     (length (filter isFact synthetic_evidence)) < 10
     where

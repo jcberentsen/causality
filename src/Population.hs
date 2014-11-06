@@ -38,8 +38,12 @@ many_tosses :: Fractional a => Int -> [a]
 many_tosses how_many =
     take how_many $ map (\n -> (fromIntegral n) / (fromIntegral how_many - 1)) $ [0..how_many]
 
-summarizePopulation :: (Eq name, Eq p, Ord name, Ord p) => Population name p -> [(name, Double)]
-summarizePopulation _obs = []
+summarizePopulation :: (Eq name, Eq p, Truthy p, Ord name, Ord p) => Population name p -> [(name, Double)]
+summarizePopulation pop =
+    let
+        observationCount = length pop
+    in
+        map (\fact@(Evidence name _p) -> (name, fromIntegral (population_count fact pop) / (fromIntegral observationCount))) $ allFacts pop
 
 count :: Eq a => a -> [a] -> Int
 count a as =
@@ -48,3 +52,6 @@ count a as =
 population_count :: (Eq name, Eq p, Ord name, Ord p) => Evidence name p -> Population name p -> Int
 population_count e pop =
     count e $ concat (map observations_toList pop)
+
+allFacts :: (Eq name, Eq p, Truthy p, Ord name, Ord p) => Population name p -> [Evidence name p]
+allFacts pop = filter isFact $ observations_toList $ join_observations pop
