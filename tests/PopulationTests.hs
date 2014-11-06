@@ -41,6 +41,15 @@ case_a_coin_has_two_possibilities =
         heads = fact "heads" :: Evidence String Bool
         tails = fact "tails"
 
+case_summarize_coin_toss_population =
+    summarizePopulation pop @?= [("heads", 0.5), ("tails", 0.5)]
+    where
+        pop = generate_population 2 potentials Ignorance
+        potentials = Alternatively (Alternatives [heads, tails]) :: Potential String Float Bool
+        heads = fact "heads" :: Evidence String Bool
+        tails = fact "tails"
+
+
 prop_unlikely_evidence =
     (length (filter isFact synthetic_evidence)) < 10
     where

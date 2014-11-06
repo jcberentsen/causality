@@ -38,6 +38,9 @@ many_tosses :: Fractional a => Int -> [a]
 many_tosses how_many =
     take how_many $ map (\n -> (fromIntegral n) / (fromIntegral how_many - 1)) $ [0..how_many]
 
+summarizePopulation :: (Eq name, Eq p, Ord name, Ord p) => Population name p -> [(name, Double)]
+summarizePopulation _obs = []
+
 count :: Eq a => a -> [a] -> Int
 count a as =
     length $ filter (==a) as

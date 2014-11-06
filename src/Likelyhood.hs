@@ -19,6 +19,8 @@ data Likelyhood name p =
     Likelyhood name (Probability p)
     deriving (Generic, Show, Typeable, Eq, Ord)
 
+$(deriveJSON defaultOptions ''Likelyhood)
+
 data Alternatives name r = Alternatives [Evidence name r]
     deriving (Generic, Show, Typeable, Eq, Ord)
 
