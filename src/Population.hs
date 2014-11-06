@@ -43,7 +43,7 @@ summarizePopulation pop =
     let
         observationCount = length pop
     in
-        map (\fact@(Evidence name _p) -> (name, fromIntegral (population_count fact pop) / (fromIntegral observationCount))) $ allFacts pop
+        map (\evidence@(Evidence name _p) -> (name, fromIntegral (population_count evidence pop) / (fromIntegral observationCount))) $ allFacts pop
 
 count :: Eq a => a -> [a] -> Int
 count a as =
