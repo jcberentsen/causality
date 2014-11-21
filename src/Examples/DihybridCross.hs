@@ -26,6 +26,9 @@ import Model
 -- bbgg     bbgg      bbgg
 -- BbGg     BbGg      BBGG, BbGg, etc...
 
+devo :: IsString name => CausalModel name Bool
+devo = Multiple [cause_G, cause_bb, cause_gg, cause_blue, cause_brown, cause_green]
+
 -- Allele facts
 allele_G, allele_g, allele_B, allele_b :: IsString name => Evidence name Bool
 allele_G = truly "G"
@@ -59,19 +62,27 @@ green = truly "green"
 brown = truly "brown"
 
 -- Gene causes Phenotype
-devo_brown :: IsString name => CausalModel name Bool
-devo_brown = AnyCause [allele_B] brown
+cause_brown :: IsString name => CausalModel name Bool
+cause_brown = AnyCause [allele_B] brown
 
 -- green devo when 'all b' alleles (ie not any B) and any 'G'
+cause_green :: IsString name => CausalModel name Bool
+cause_green = AllCause [allele_G, both_bb] green
+
 cause_bb :: IsString name => CausalModel name Bool
 cause_bb = AllCause [allele_b1, allele_b2] both_bb
 
 both_bb :: IsString name => Evidence name Bool
 both_bb = truly "bb"
 
-cause_green :: IsString name => CausalModel name Bool
-cause_green = AllCause [allele_G, both_bb] green
+-- blue devo when two 'b' alleles and two 'g' alleles
+cause_blue :: IsString name => CausalModel name Bool
+cause_blue = AllCause [both_gg, both_bb] blue
 
-devo :: IsString name => CausalModel name Bool
-devo = Multiple [devo_brown, cause_G, cause_bb, cause_green]
+cause_gg :: IsString name => CausalModel name Bool
+cause_gg = AllCause [allele_g1, allele_g2] both_gg
+
+both_gg :: IsString name => Evidence name Bool
+both_gg = truly "gg"
+
 
