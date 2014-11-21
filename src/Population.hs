@@ -7,6 +7,7 @@ import Model
 import Evidence
 import Observations
 import Likelyhood
+import Data.List
 
 type Population name p = [Observations name p]
 
@@ -55,3 +56,8 @@ population_count e pop =
 
 allFacts :: (Eq name, Eq p, Truthy p, Ord name, Ord p) => Population name p -> [Evidence name p]
 allFacts pop = filter isFact $ observations_toList $ join_observations pop
+
+groupCount :: (Eq a, Ord a) => [a] -> [(a, Int)]
+groupCount as = map (\gs@(g:_) -> (g, length gs)) (group sorted)
+    where sorted = sort as
+

@@ -85,6 +85,11 @@ case_rain_sprinkler_likely_synthetic_population =
 
 rain_sprinklers_priors = [Likelyhood "rain" (P 0.5), Likelyhood "sprinklers" (P 0.1)] :: [Likelyhood String Float]
 
+case_group_count = do
+    groupCount "" @?= []
+    groupCount ['a'] @?= [('a',1)]
+    groupCount "ababbc" @?= [('a',2), ('b',3), ('c',1)]
+
 -- Populations. A causal system is a generator of populations. The input is generators of facts.
 -- The output is population of facts.
 
