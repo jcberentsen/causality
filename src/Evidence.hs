@@ -55,8 +55,8 @@ contradicting :: (Eq a, Eq b) => Evidence a b -> Evidence a b -> Bool
 contradicting (Evidence a pa) (Evidence b pb) = if a == b then if pa /= pb then True else False else False
 
 -- or
-(<|>) :: Evidence name prob -> Evidence name prob -> [Evidence name prob]
-e1 <|> e2 = [e1, e2]
+(<||>) :: Evidence name prob -> Evidence name prob -> [Evidence name prob]
+e1 <||> e2 = [e1, e2]
 
 fact :: Truthy a => name -> Evidence name a
 fact name = Evidence name yes

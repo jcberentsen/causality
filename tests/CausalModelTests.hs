@@ -88,7 +88,7 @@ case_no_rain_nor_sprinklers_cause_no_evidence_for_wet =
         where observations = [not_raining, no_sprinklers]
 
 prop_operator_model (cause1, cause2, effect) =
-    cause1 <|> cause2 |> effect == AnyCause [cause1, cause2] effect
+    cause1 <||> cause2 |> effect == AnyCause [cause1, cause2] effect
         where _types = [cause1, cause2, effect] :: [Evidence String Bool]
 
 -- AllCause
